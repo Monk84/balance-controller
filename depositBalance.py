@@ -14,6 +14,12 @@ class DepositBalance:
     def get_balance(self):
         return self.balance
 
+    def set_balance(self, new_balance):
+        if not isinstance(new_balance, int):  # 2 tests required
+            raise TypeError("DepositBalance: expected int for new_balance")
+            return
+        self.balance = new_balance
+
     def apply_reg_operation(self, reg_op):  # 4 tests required
         if not isinstance(reg_op, RegularOperation):
             raise TypeError("DepositBalance: expected RegularOperation as reg_op")
