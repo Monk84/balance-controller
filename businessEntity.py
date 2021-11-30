@@ -15,7 +15,7 @@ class BusinessEntity:
         self.regularOperations = []
         active_operations = DataManager.get_active_regular_operations()
         for operation in active_operations:
-            # todo fix mapping for operation
+            # need to fix mapping for operation
             self.regularOperations.append(RegularOperation(operation.name, operation.reg_op_type,
                                                            operation.payment_amount, operation.period,
                                                            operation.notification_period, operation.start_date))
