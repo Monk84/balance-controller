@@ -180,7 +180,6 @@ class BusinessEntity:
             raise ValueError("set_period_of_operations() can't update value of the period in the db")
         return {"message": "Successfully update period"}
 
-    # TODO в базе должна храниться дата последнего совершения операции.. чекнуть
 
     # -----------#
     # def set_period_of_operations_with_mode(self, current_regular_operation, new_period, mode):
@@ -233,3 +232,47 @@ class BusinessEntity:
         except Exception:
             raise ValueError("set_operation_type() can't update type in the the database")
         return {"message": "Successfully update type"}
+
+
+    def get_notifications_settings(self, operation_id):
+        index = None
+        for i in range(len(self.regularOperations)):
+            if self.regularOperations[i]["id"] == operation_id:
+                index = i
+                break
+        
+        if not index:
+            raise ValueError("set_operation_type() can't find such operation")
+        
+        operation = self.regularOperations[index].get()
+        return { 
+            'period': operation.period,
+            'notification_period': operation.notification_period,
+            'start_date': operation.start_date
+        }
+    
+    # TODO параметры те? 
+    def update_notification_settings(self, operation_id, period= None, notification_period = None):
+        index = None
+        for i in range(len(self.regularOperations)):
+            if self.regularOperations[i]["id"] == operation_id:
+                index = i
+                break
+        
+        if not index:
+            raise ValueError("set_operation_type() can't find such operation")
+        
+        try:
+            self.regularOperations[index].update(period=period, notification_period=notification_period)
+        except:
+            raise ValueError("update_notification_settings(): can't update RegularOperation notification settings")
+        
+        try:
+           DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]})
+        except Exception:
+            raise ValueError("set_operation_type() can't update notification settings in the the database")
+        
+        return {"message": "Successfully update notification settings"}
+            
+    # TODO как отозвать операции? где функи
+    # TODO в базе должна храниться дата последнего совершения операции.. чекнуть
