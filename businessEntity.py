@@ -251,6 +251,7 @@ class BusinessEntity:
             'start_date': operation.start_date
         }
     
+
     # TODO параметры те? 
     def update_notification_settings(self, operation_id, period= None, notification_period = None):
         index = None
@@ -273,6 +274,21 @@ class BusinessEntity:
             raise ValueError("set_operation_type() can't update notification settings in the the database")
         
         return {"message": "Successfully update notification settings"}
-            
+    
+
+    def execute_operation(self, operation):
+        self.deposit_balance = self.deposit_balance - operation.payment_amount
+        try:
+            DB.change_deposit_balance(self.deposit_balance)
+        except:
+            raise ValueError("execute_operation() can't update deposit balance")
+        return {"message": "Successfully updated deposit balance"}
+    
+    # TODO надо ли сравнивать со значением в бд на всякий случай?
+    def get_balance(self):
+        return self.deposit_balance
+
+
+
     # TODO как отозвать операции? где функи
     # TODO в базе должна храниться дата последнего совершения операции.. чекнуть
