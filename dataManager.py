@@ -42,6 +42,7 @@ class DataManager:
     def get_active_regular_operations(self):
         """
         Getting active regular operations info
+        :returns id: int
         :returns name: str
         :returns reg_op_type
         :returns payment_amount
