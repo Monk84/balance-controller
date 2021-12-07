@@ -7,7 +7,7 @@ from regularOperation import RegularOperation
 from regularOperationType import RegularOperationType
 from datetime import date, timedelta, datetime
 from notification import Notification
-
+import re
 DB = DataManager()
 
 
@@ -65,6 +65,8 @@ class BusinessEntity:
                 return
 
     def remove_regular_operation(self, operation_id):
+        if not isinstance(operation_id, int):
+            raise TypeError('Expected RegularOperationType as regular operation type')
         for i in range(len(self.regularOperations)):
             operation = self.regularOperations[i]
             if operation["id"] == operation_id:
@@ -77,7 +79,7 @@ class BusinessEntity:
         if not isinstance(new_balance, int):
             raise TypeError("PaymentBalance: expected int for new_limit")
             return
-        self.deposit_balance.balance.set_balance(new_balance)
+        self.deposit_balance.set_balance(new_balance)
         DB.change_deposit_balance(new_balance)
 
     def form_statistics_by_period(self, tag, start_date, end_date):
@@ -90,14 +92,18 @@ class BusinessEntity:
         if not isinstance(end_date, str):
             raise TypeError("form_statistics_by_period(): expected str for end_date")
             return
+        if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', start_date):
+            raise KeyError("Wrong format of start_date")
+        if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', end_date):
+            raise KeyError("Wrong format of end_date")
         history = DB.get_operations_history_by_operation_type(tag, start_date, end_date)
         total_income = 0
         total_spend = 0
         for operation in history:
-            if operation.price < 0:
-                total_spend += operation.price
+            if operation["price"] < 0:
+                total_spend += operation["price"]
             else:
-                total_income += operation.price
+                total_income += operation["price"]
         return {"total_income": total_income, "total_spend": total_spend, "start_date": start_date, "end_date": end_date}
 
     def add_regular_operation_type(self, name):
