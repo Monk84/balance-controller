@@ -5,7 +5,7 @@ import testRegularOperationType
 import testRegularOperation
 import testsDepositBalance
 import testsPaymentsBalance
-
+import testBusinessEntity
 
 if __name__ == "__main__":
     runner = unittest.TextTestRunner()
@@ -14,4 +14,4 @@ if __name__ == "__main__":
     runner.run(testRegularOperation.suite())
     runner.run(testsDepositBalance.suite())
     runner.run(testsPaymentsBalance.suite())
-
+    runner.run(testBusinessEntity.suite())

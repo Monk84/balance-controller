@@ -7,7 +7,7 @@ from regularOperation import RegularOperation
 from regularOperationType import RegularOperationType
 from datetime import date, timedelta, datetime
 from notification import Notification
-
+import re
 DB = DataManager()
 
 
@@ -34,8 +34,8 @@ class BusinessEntity:
             for op_type in self.regularOperationTypes:
                 if op_type.name == operation["reg_op_type"]:
                     # building dates and RegularOperation
-                    period = timedelta(days=float(operation["period"]))   # IMPORTANT FORMAT OF TIMEDELTA
-                    notification_period = timedelta(days=operation["notification_period"]) # IMPORTANT FORMAT OF TIMEDELTA
+                    period = timedelta(days=int(operation["period"]))   # IMPORTANT FORMAT OF TIMEDELTA
+                    notification_period = timedelta(days=operation["notification_period"])
                     start_date = date(
                         year=int(operation["start_date"][:4]),
                         month=int(operation["start_date"][5:7]),
@@ -51,8 +51,6 @@ class BusinessEntity:
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)
-        if not isinstance(new_reg, RegularOperation):
-            return
         new_id = DB.add_regular_operation(new_reg)
         self.regularOperations.append({"id": new_id, "operation": new_reg})
 
@@ -63,9 +61,13 @@ class BusinessEntity:
                 DB.change_regular_operation(operation)
                 return
 
-    def remove_regular_operation(self, selected_id):
-        for op in self.regularOperations:
-            if op["id"] == selected_id:
+
+    def remove_regular_operation(self, operation_id):
+        if not isinstance(operation_id, int):
+            raise TypeError('Expected RegularOperationType as regular operation type')
+        for i in range(len(self.regularOperations)):
+            operation = self.regularOperations[i]
+            if operation["id"] == operation_id:
                 operation["operation"].delete()
                 DB.remove_regular_operation(op)
                 self.regularOperations.pop(i)
@@ -75,28 +77,28 @@ class BusinessEntity:
     def change_deposit_balance(self, new_balance=0):
         if not isinstance(new_balance, int):
             raise TypeError("PaymentBalance: expected int for new_limit")
-            return
-        self.deposit_balance.balance.set_balance(new_balance)
+        self.deposit_balance.set_balance(new_balance)
         DB.change_deposit_balance(new_balance)
 
     def form_statistics_by_period(self, tag, start_date, end_date):
         if not isinstance(tag, str):
             raise TypeError("form_statistics_by_period(): expected str for tag")
-            return
         if not isinstance(start_date, str):
             raise TypeError("form_statistics_by_period(): expected str for start_date")
-            return
         if not isinstance(end_date, str):
             raise TypeError("form_statistics_by_period(): expected str for end_date")
-            return
+        if not re.fullmatch(r'^\d{4}-\d{2}-\d{2}$', start_date):
+            raise KeyError("Wrong format of start_date")
+        if not re.fullmatch(r'^\d{4}-\d{2}-\d{2}$', end_date):
+            raise KeyError("Wrong format of end_date")
         history = DB.get_operations_history_by_operation_type(tag, start_date, end_date)
         total_income = 0
         total_spend = 0
         for operation in history:
-            if operation.price < 0:
-                total_spend += operation.price
+            if operation["price"] < 0:
+                total_spend += operation["price"]
             else:
-                total_income += operation.price
+                total_income += operation["price"]
         return {"total_income": total_income, "total_spend": total_spend, "start_date": start_date, "end_date": end_date}
 
     def add_regular_operation_type(self, name):
@@ -109,8 +111,6 @@ class BusinessEntity:
                 return
         # adding a new one
         new_type = RegularOperationType(name, True)
-        if not isinstance(new_type, RegularOperationType):
-            return
         self.regularOperationTypes.append(new_type)
         DB.add_operation_type(new_type)
         return

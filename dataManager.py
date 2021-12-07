@@ -94,16 +94,16 @@ class DataManager:
         """
         Getting an array with active regular operations.
         Array contains objects with fields:
-        :param id: int
-        :param name: str
-        :param reg_op_type : str
-        :param payment_amount : int
-        :param period : float
-        :param notification_period : float
-        :param start_date : str
+        :param {int} id
+        :param {str} name
+        :param {str} reg_op_type
+        :param {int} payment_amount
+        :param {int} period
+        :param {int} notification_period
+        :param {str} start_date
         """
         active_operations = [{"id": 1, "name": "Кредит за машину", "reg_op_type": "Кредит", "payment_amount": -123, "period": 12, "notification_period": 23, "start_date": "2020-01-01"},
-                             {"id": 1, "name": "Аренда квартиры", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 13, "notification_period": 12.2, "start_date": "2021-01-01"}]
+                             {"id": 2, "name": "Аренда квартиры", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 13, "notification_period": 12, "start_date": "2021-01-01"}]
         return active_operations
 
     def get_operation_by_id(self, id):
@@ -135,8 +135,8 @@ class DataManager:
         """
         Getting all regular operation types with disabled.
         Returns an array of objects with params:
-        :param name: str
-        :param active: bool
+        :param {str} name
+        :param {bool} active
         """
         result = [{"name": "Аренда", "active": True},
                   {"name": "Кредит", "active": True},
