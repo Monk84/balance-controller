@@ -106,10 +106,6 @@ class DataManager:
                              {"id": 2, "name": "Аренда квартиры", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 13, "notification_period": 12, "start_date": "2021-01-01"}]
         return active_operations
 
-    def get_operation_by_id(self, id):
-        
-        return {"id": 1, "name": "Кредит за машину", "reg_op_type": "Кредит", "payment_amount": -123, "period": 12, "notification_period": 23, "start_date": "2020-01-01"}
-    
     def activate_operation_type(self, operation_type):
         """
         Sets regularOperationType enabled.

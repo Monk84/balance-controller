@@ -139,30 +139,9 @@ class BusinessEntity:
         else:
             raise ValueError("Check notification format and data")
 
-    #TODO после обсуждения оставить одну из фунок
-
     def get_period_of_operations(self):
-        return [number for number in range(1, 32)]
-    
-    # -----------#
-    # def get_period_of_operations_modes(self):
-    #     """
-    #     Get list of available peroiod settings. Ex., 'period: 1, day: 2021.12.12' in month mode means that every 
-    #     month in the 12 day of the month
-    #     """
-    #     # TODO настройки платежей не сохраняем же в бд?
-    #     # TODO в конструкторе операций период - это промежуток в количестве дней между оплатой. В месяце мб 28/29/30/31 день
-    #     # -> может сместиться дата платежа, что мб критично для некоторых видов. Как тогда считать платеж? 
-    #     mode = {}
-    #     mode["day_mode"] = {"period": 1, "day": datetime.now()} # TODO какой формат времени будем использовать?
-    #     mode["week_mode"] = {"period": 1, "day": datetime.now()} 
-    #     mode["month_mode"] = {"period": 1, "day": datetime.now()} 
-    #     mode["year_mode"] = {"period": 1, "day": datetime.now()} 
-    #     return mode
-    # -----------#
-        
-    # TODO обработать выбор параметра периодичности == сохранить в базу, обновить объект класса 
-    # или это обновить стейт приложения на фронте ? 
+        return { "period" : [number for number in range(1, 32)]}
+  
     def set_period_of_operations(self, current_regular_operation_id, new_period):
         index = None
         for i in range(len(self.regularOperations)):
@@ -171,62 +150,27 @@ class BusinessEntity:
                 break
         
         if not index:
-            raise ValueError("set_period_of_operations() can't find operation with such id")
+            return {"message": "Invalid operation id"}
        
-        if isinstance(new_period, int): #TODO на чем условимся: что передаем: как строку или как инт сразу?
+        if isinstance(new_period, int): 
                 if new_period <= 0:
-                   raise TypeError("set_period_of_operations() needs positive integer value of the period") 
-        try:
-            if str(new_period).isdigit():
-                if new_period <= 0:
-                   raise TypeError("set_period_of_operations() needs positive integer value of the period") 
-                new_period = int(new_period)
-        except Exception as err:
-            print(err)
-            raise TypeError("set_period_of_operations() invalid period format") 
+                    return {"message": "Set positive integer for the period value"}
+        else:
+            return {"message": "Set positive integer for the period value"}
 
         try:
-            self.regularOperations[index].update(period=new_period)
+            self.regularOperations[index].update(period=timedelta(new_period))
         except:
-            raise ValueError("set_period_of_operations() can't update value of the period in the object RegularOperation")
+            return {"message": "Set positive integer for the period value"}
         
         try:
             DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]})
         except Exception as err:
-            raise ValueError("set_period_of_operations() can't update value of the period in the db")
+            return {"message": "Troubles with database while saving updating regular operation"}
         return {"message": "Successfully update period"}
 
-
-    # -----------#
-    # def set_period_of_operations_with_mode(self, current_regular_operation, new_period, mode):
-    #     if not isinstance(current_regular_operation, RegularOperation):
-    #         return {"message": False}
-    #     if mode =="day_mode":
-    #         if isinstance(new_period, int): #TODO на чем условимся: что передаем: как строку или как инт сразу?
-    #                 if new_period <= 0:
-    #                     return {"message": "Set positive period"} #TODO как обрабатываем исключения и ошибки? 
-    #         try:
-    #             if str(new_period).isdigit():
-    #                 if new_period <= 0:
-    #                     return {"message": "Set positive period"} #TODO как обрабатываем исключения и ошибки? 
-    #                 new_period = int(new_period)
-    #         except TypeError as err:
-    #             return {"message": err}
-    #         current_regular_operation.update(period=new_period)
-    #         return True
-    #     # TODO а тут непонятно. так как тогда обращаться к дате совершения операции и чекать эта неделя или следующая или нет..... ?
-    #     if mode =="week_mode":
-    #         pass
-    #     if mode =="month_mode":
-    #         pass
-    #     if mode =="year_mode":
-    #         pass        
-    # -----------#
-
-
     def get_operation_types(self):
-        return DB.get_operation_types()
-
+        return self.all_types
 
     def set_operation_type(self, operation_id, type):
         index = None 
@@ -236,19 +180,18 @@ class BusinessEntity:
                 break
         
         if not index:
-            raise ValueError("set_operation_type() can't find such operation")
+            return {"message": "Invalid operation id"}
         
         try:
             self.regularOperations[index].update(reg_op_type=type)
         except Exception:
-            raise ValueError("set_operation_type() can't update type in the RegularOperation object")
+            return {"message": "Set correct RegularOperationType for update"}
         
         try:
            DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]})
         except Exception:
-            raise ValueError("set_operation_type() can't update type in the the database")
+            return {"message": "Troubles with database while changing operation type"}
         return {"message": "Successfully update type"}
-
 
     def get_notifications_settings(self, operation_id):
         index = None
@@ -258,17 +201,16 @@ class BusinessEntity:
                 break
         
         if not index:
-            raise ValueError("set_operation_type() can't find such operation")
+            return {"message": "Invalid operation id"}
         
         operation = self.regularOperations[index].get()
-        return { 
+        return { "data": {
             'period': operation.period,
             'notification_period': operation.notification_period,
             'start_date': operation.start_date
+            }
         }
     
-
-    # TODO параметры те? 
     def update_notification_settings(self, operation_id, period= None, notification_period = None):
         index = None
         for i in range(len(self.regularOperations)):
@@ -277,12 +219,22 @@ class BusinessEntity:
                 break
         
         if not index:
-            raise ValueError("set_operation_type() can't find such operation")
+            return {"message": "Invalid operation id"}
         
-        try:
-            self.regularOperations[index].update(period=period, notification_period=notification_period)
-        except:
-            raise ValueError("update_notification_settings(): can't update RegularOperation notification settings")
+        if period and isinstance(period, int): 
+                if period <= 0:
+                    return {"message": "Set positive integer for the period value"}
+                try:
+                    self.regularOperations[index].update(period=timedelta(period))
+                except:
+                    return {"message": "Set positive integer for the period value"}                   
+        if notification_period and isinstance(notification_period, int): 
+                if notification_period <= 0:
+                    return {"message": "Set positive integer for the notification_period value"}
+                try:
+                    self.regularOperations[index].update(notification_period=timedelta(notification_period))
+                except:
+                    return {"message": "Set positive integer for the notification_period value"}
         
         try:
            DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]})
@@ -291,7 +243,6 @@ class BusinessEntity:
         
         return {"message": "Successfully update notification settings"}
     
-
     def execute_operation(self, operation):
         self.deposit_balance = self.deposit_balance - operation.payment_amount
         try:
@@ -300,7 +251,6 @@ class BusinessEntity:
             raise ValueError("execute_operation() can't update deposit balance")
         return {"message": "Successfully updated deposit balance"}
     
-    # TODO надо ли сравнивать со значением в бд на всякий случай?
     def get_balance(self):
         return self.deposit_balance
 
@@ -336,6 +286,3 @@ class BusinessEntity:
         for op in operations_to_recover:
             DB.activate_regular_operation(op)
             op.add()
-    
-    # TODO как отозвать операции? где функи
-    # TODO в базе должна храниться дата последнего совершения операции.. чекнуть
