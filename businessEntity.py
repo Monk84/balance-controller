@@ -52,8 +52,6 @@ class BusinessEntity:
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)
-        if not isinstance(new_reg, RegularOperation):
-            return
         new_id = DB.add_regular_operation(new_reg)
         self.regularOperations.append({"id": new_id, "operation": new_reg})
 
@@ -78,23 +76,19 @@ class BusinessEntity:
     def change_deposit_balance(self, new_balance=0):
         if not isinstance(new_balance, int):
             raise TypeError("PaymentBalance: expected int for new_limit")
-            return
         self.deposit_balance.set_balance(new_balance)
         DB.change_deposit_balance(new_balance)
 
     def form_statistics_by_period(self, tag, start_date, end_date):
         if not isinstance(tag, str):
             raise TypeError("form_statistics_by_period(): expected str for tag")
-            return
         if not isinstance(start_date, str):
             raise TypeError("form_statistics_by_period(): expected str for start_date")
-            return
         if not isinstance(end_date, str):
             raise TypeError("form_statistics_by_period(): expected str for end_date")
-            return
-        if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', start_date):
+        if not re.fullmatch(r'^\d{4}-\d{2}-\d{2}$', start_date):
             raise KeyError("Wrong format of start_date")
-        if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', end_date):
+        if not re.fullmatch(r'^\d{4}-\d{2}-\d{2}$', end_date):
             raise KeyError("Wrong format of end_date")
         history = DB.get_operations_history_by_operation_type(tag, start_date, end_date)
         total_income = 0
@@ -116,8 +110,6 @@ class BusinessEntity:
                 return
         # adding a new one
         new_type = RegularOperationType(name, True)
-        if not isinstance(new_type, RegularOperationType):
-            return
         self.regularOperationTypes.append(new_type)
         DB.add_operation_type(new_type)
         return

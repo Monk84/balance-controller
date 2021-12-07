@@ -85,7 +85,12 @@ class TestBusinessEntity(unittest.TestCase):
         application = BusinessEntity()
         with self.assertRaises(KeyError):
             result = application.form_statistics_by_period("any_tag", "20aa-01123-01", "2021-01-01")
+            self.assertNotEqual(123, result["total_income"])
+            self.assertNotEqual(-234, result["total_spend"])
+        with self.assertRaises(KeyError):
             result = application.form_statistics_by_period("any_tag", "2020-01-01", "2021/01/01")
+            self.assertNotEqual(123, result["total_income"])
+            self.assertNotEqual(-234, result["total_spend"])
 
     def test_wrong_tag_type_statistics_by_period(self):
         application = BusinessEntity()
@@ -96,7 +101,12 @@ class TestBusinessEntity(unittest.TestCase):
         application = BusinessEntity()
         with self.assertRaises(TypeError):
             result = application.form_statistics_by_period("any_tag", 123, "2021-01-01")
+            self.assertNotEqual(123, result["total_income"])
+            self.assertNotEqual(-234, result["total_spend"])
+        with self.assertRaises(TypeError):
             result = application.form_statistics_by_period("any_tag", "2021-01-01", 123)
+            self.assertNotEqual(123, result["total_income"])
+            self.assertNotEqual(-234, result["total_spend"])
 
     def test_right_add_regular_operation_type(self):
         application = BusinessEntity()
