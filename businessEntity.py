@@ -34,8 +34,8 @@ class BusinessEntity:
             for op_type in self.regularOperationTypes:
                 if op_type.name == operation["reg_op_type"]:
                     # building dates and RegularOperation
-                    period = timedelta(days=float(operation["period"]))   # IMPORTANT FORMAT OF TIMEDELTA
-                    notification_period = timedelta(days=operation["notification_period"]) # IMPORTANT FORMAT OF TIMEDELTA
+                    period = timedelta(days=int(operation["period"]))   # IMPORTANT FORMAT OF TIMEDELTA
+                    notification_period = timedelta(days=operation["notification_period"])
                     start_date = date(
                         year=int(operation["start_date"][:4]),
                         month=int(operation["start_date"][5:7]),
