@@ -12,8 +12,8 @@ DB = DataManager()
 
 
 class BusinessEntity:
-    regularOperations = []
-    regularOperationTypes = []
+    # regularOperations = []
+    # regularOperationTypes = [] -- why?
 
     def __init__(self):
         # getting operation types
@@ -43,12 +43,11 @@ class BusinessEntity:
                     new_reg_op = RegularOperation(operation["name"], op_type, operation["payment_amount"], period, notification_period, start_date)
                     self.regularOperations.append({"id": operation["id"], "operation": new_reg_op})
 
-        # getting current balance on init
+        # getting current balances on init
         cur_dep_balance = DB.get_deposit_balance()
         self.deposit_balance = DepositBalance(cur_dep_balance)
-        # **add here limits
-
-
+        cur_paym_balance = DB.get_paymenst_balance()
+        self.payments_balance = PaymentBalance(cur_paym_balance)
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)
@@ -64,14 +63,14 @@ class BusinessEntity:
                 DB.change_regular_operation(operation)
                 return
 
-    def remove_regular_operation(self, operation_id):
-        for i in range(len(self.regularOperations)):
-            operation = self.regularOperations[i]
-            if operation["id"] == operation_id:
+    def remove_regular_operation(self, selected_id):
+        for op in self.regularOperations:
+            if op["id"] == selected_id:
                 operation["operation"].delete()
-                DB.remove_regular_operation(operation)
+                DB.remove_regular_operation(op)
                 self.regularOperations.pop(i)
-                return
+                return True
+        return False
 
     def change_deposit_balance(self, new_balance=0):
         if not isinstance(new_balance, int):
@@ -115,7 +114,24 @@ class BusinessEntity:
         self.regularOperationTypes.append(new_type)
         DB.add_operation_type(new_type)
         return
-
+        
+    
+    def remove_regular_operation_type(self, name):
+        # search for exists op types(even deleted)
+        for op_type in self.regularOperationTypes:
+            if op_type.name == name:
+                # found exist one
+                op_type.delete()
+                DB.deactivate_operation_type(op_type)
+                return
+        # adding a new one
+        new_type = RegularOperationType(name, True)
+        if not isinstance(new_type, RegularOperationType):
+            return
+        self.regularOperationTypes.append(new_type)
+        DB.add_operation_type(new_type)
+        return
+    
     def send_notification(self, notification_format, notification_type):
         current_notify = Notification(notification_format, notification_type)
         if current_notify != "":
@@ -126,7 +142,7 @@ class BusinessEntity:
     #TODO после обсуждения оставить одну из фунок
 
     def get_period_of_operations(self):
-        return [number for number in range(32)]
+        return [number for number in range(1, 32)]
     
     # -----------#
     # def get_period_of_operations_modes(self):
@@ -288,7 +304,38 @@ class BusinessEntity:
     def get_balance(self):
         return self.deposit_balance
 
+    def show_operations(self):
+        ops_to_sort = []
+        today = datetime.date.today()
+        for op in self.regularOperations:
+            op_attrs = op['operation'].get()
+            start_date = op_attrs['start_date']
+            period = op_attrs['period']
+            i = 0
+            while today > start_date + period * i:
+                i += 1
+            ops_to_sort += [(today - (start_date + period * (i - 1)).days, op)]
+        return sorted(ops_to_sort, key=lambda x : x[1])
+    
+    def set_payments_limit(self, new_limit=None, new_period=None):
+        self.payments_balance.update(new_limit, new_period)
+    
+    def set_balance_limit(self, new_limit=None, new_period=None):
+        self.deposit_balance.update(new_limit, new_period)
+    
+    def daily_check(self):
+        if self.deposit_balance.apply_reg_ops(self.regularOperations):
+            print(self.deposit_balance.get_notification().get_notification())
+        DB.set_deposit_balance(self.deposit_balance.get_balance())
+        
+        if self.payments_balance.apply_reg_ops(self.regularOperations):
+            print(self.payments_balance.get_notification().get_notification())
+        DB.set_payments_balance(self.payments_balance.get_balance())
 
-
+    def secret_menu_recovery(self, operations_to_recover):
+        for op in operations_to_recover:
+            DB.activate_regular_operation(op)
+            op.add()
+    
     # TODO как отозвать операции? где функи
     # TODO в базе должна храниться дата последнего совершения операции.. чекнуть

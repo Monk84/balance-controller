@@ -34,7 +34,14 @@ class DataManager:
         :argument reg: object with format {"id": int, "operation": RegularOperation}
         """
         return
-
+    
+    def activate_regular_operation(self, reg):
+        """
+        Sets regularOperation enabled.
+        :argument reg: object with format {"id": int, "operation": RegularOperation}
+        """
+        return
+        
     def change_deposit_balance(self, new_balance):
         """
         Updates current deposit balance.
@@ -42,6 +49,7 @@ class DataManager:
         """
         # Update balance
         return
+
 
     def get_operations_history_by_operation_type(self, tag, start_date, end_date):
         """
@@ -68,6 +76,19 @@ class DataManager:
         :returns result: int
         """
         return 0
+        
+    def set_deposit_balance(self, new_balance):
+        """
+        Sets deposit balance.
+        :param new_balance: int
+        """
+
+    def set_payments_balance(self, new_balance):
+        """
+        Sets payments balance.
+        :param new_balance: int
+        """
+
 
     def get_active_regular_operations(self):
         """
@@ -92,6 +113,13 @@ class DataManager:
     def activate_operation_type(self, operation_type):
         """
         Sets regularOperationType enabled.
+        :argument operation_type: regularOperationType
+        """
+        return
+        
+    def deactivate_operation_type(self, operation_type):
+        """
+        Sets regularOperationType disabled.
         :argument operation_type: regularOperationType
         """
         return
