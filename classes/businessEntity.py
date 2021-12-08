@@ -133,12 +133,13 @@ class BusinessEntity:
         return
     
     def send_notification(self, notification_format, notification_type):
-        current_notify = Notification(notification_format, notification_type)
-        if current_notify != "":
-            return { "message" : current_notify}
-        else:
-            raise ValueError("Check notification format and data")
-
+        try:
+            current_notify = Notification(notification_format, notification_type)
+        except:
+            return { "message" : "Invalid notification format and data"}
+    
+        return { "message" : current_notify.get_notification()}
+    
     def get_period_of_operations(self):
         return { "period" : [number for number in range(1, 32)]}
   

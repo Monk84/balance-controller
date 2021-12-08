@@ -125,29 +125,24 @@ class TestBusinessEntity(unittest.TestCase):
             for i in range(len(application.regularOperations)):
                 self.assertNotEqual(123, application.regularOperationTypes[-1].name)
 
+    def test_send_wrong_notification(self):
+        application = BusinessEntity()
+        res = application.send_notification(None, None)
+        self.assertEqual(res,  {'message': 'Invalid notification format and data'})
+        res = application.send_notification(None, "HELLO")
+        self.assertEqual(res,  {'message': 'Invalid notification format and data'})
+        res = application.send_notification("HELLO", None)
+        self.assertEqual(res,  {'message': 'Invalid notification format and data'})
 
-def suite():
-    _suite = unittest.TestSuite()
-    _suite.addTest(TestBusinessEntity('test_init'))
-    _suite.addTest(TestBusinessEntity('test_right_add_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_wrong_add_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_right_change_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_wrong_change_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_missing_change_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_right_remove_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_wrong_remove_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_missing_remove_regular_operation'))
-    _suite.addTest(TestBusinessEntity('test_right_change_deposit_balance'))
-    _suite.addTest(TestBusinessEntity('test_wrong_change_deposit_balance'))
-    _suite.addTest(TestBusinessEntity('test_right_form_statistics_by_period'))
-    _suite.addTest(TestBusinessEntity('test_wrong_dates_format_form_statistics_by_period'))
-    _suite.addTest(TestBusinessEntity('test_wrong_tag_type_statistics_by_period'))
-    _suite.addTest(TestBusinessEntity('test_wrong_date_types_form_statistics_by_period'))
-    _suite.addTest(TestBusinessEntity('test_right_add_regular_operation_type'))
-    _suite.addTest(TestBusinessEntity('test_add_disabled_regular_operation_type'))
-    _suite.addTest(TestBusinessEntity('test_wrong_add_regular_operation_type'))
-    return _suite
+    def test_send_right_notification(self):
+        application = BusinessEntity()
+        res = application.send_notification("This is test  notif", "GREAT")
+        self.assertEqual(res, {'message': 'GREAT: This is test  notif'})
 
+    def test_get_period_of_operations(self):
+        application = BusinessEntity()
+        res = application.get_period_of_operations()
+        self.assertEqual(res, { "period" : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]})
 
-
+    
 
