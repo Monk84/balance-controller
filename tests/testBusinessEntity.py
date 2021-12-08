@@ -1,7 +1,7 @@
 import unittest
 from datetime import date, timedelta, datetime
 
-from businessEntity import BusinessEntity
+from classes.businessEntity import BusinessEntity
 
 
 # ----------------- BUSINESS ENTITY TESTING ----------------

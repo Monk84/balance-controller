@@ -1,12 +1,12 @@
-import const
-from dataManager import DataManager
-from depositBalance import DepositBalance
-from notification import Notification
-from paymentsBalance import PaymentsBalance
-from regularOperation import RegularOperation
-from regularOperationType import RegularOperationType
+import classes.const as const
+from classes.dataManager import DataManager
+from classes.depositBalance import DepositBalance
+from classes.notification import Notification
+from classes.paymentsBalance import PaymentsBalance
+from classes.regularOperation import RegularOperation
+from classes.regularOperationType import RegularOperationType
 from datetime import date, timedelta, datetime
-from notification import Notification
+from classes.notification import Notification
 import re
 DB = DataManager()
 
@@ -47,7 +47,7 @@ class BusinessEntity:
         cur_dep_balance = DB.get_deposit_balance()
         self.deposit_balance = DepositBalance(cur_dep_balance)
         cur_paym_balance = DB.get_paymenst_balance()
-        self.payments_balance = PaymentBalance(cur_paym_balance)
+        self.payments_balance = PaymentsBalance(cur_paym_balance) # constructor must be another
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)

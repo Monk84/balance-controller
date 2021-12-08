@@ -1,5 +1,5 @@
-from notification import Notification
-from regularOperation import RegularOperation
+from classes.notification import Notification
+from classes.regularOperation import RegularOperation
 import datetime
 
 

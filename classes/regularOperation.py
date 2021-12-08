@@ -1,9 +1,9 @@
 
 from datetime import date, timedelta
 # импорт наших библиотек
-import const
-from regularOperationType import RegularOperationType
-from notification import Notification
+import classes.const as const
+from classes.regularOperationType import RegularOperationType
+from classes.notification import Notification
 
 
 # описание класса регулярной операции

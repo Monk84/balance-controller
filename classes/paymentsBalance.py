@@ -1,4 +1,4 @@
-from notification import Notification
+from classes.notification import Notification
 import datetime
 
 

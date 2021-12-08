@@ -1,3 +1,5 @@
 .idea/
 __pycache__/
 .coverage
+classes/__pycache__/
+tests/__pycache__/

@@ -1,7 +1,7 @@
 import unittest
 
-import const
-import regularOperationType
+from classes import const
+from classes import regularOperationType
 
 
 # ----------------- REGULAR OPERATION TYPE TESTING ----------------

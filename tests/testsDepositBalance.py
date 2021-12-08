@@ -1,6 +1,6 @@
-from depositBalance import DepositBalance
-from regularOperationType import RegularOperationType as rot
-from regularOperation import RegularOperation as ro
+from classes.depositBalance import DepositBalance
+from classes.regularOperationType import RegularOperationType as rot
+from classes.regularOperation import RegularOperation as ro
 from datetime import timedelta as td, date as d
 import unittest as ut
 

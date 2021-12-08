@@ -2,9 +2,9 @@ import datetime
 import unittest
 from time import sleep
 
-import const
-import regularOperationType
-import regularOperation
+from classes import const
+from classes import  regularOperationType
+from classes import  regularOperation
 
 
 # ----------------- REGULAR OPERATION TESTING ----------------

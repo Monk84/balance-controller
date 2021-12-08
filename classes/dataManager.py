@@ -1,9 +1,9 @@
-import const
-from depositBalance import DepositBalance
-from notification import Notification
-from paymentsBalance import PaymentsBalance
-from regularOperation import RegularOperation
-from regularOperationType import RegularOperationType
+import classes.const as const
+from classes.depositBalance import DepositBalance
+from classes.notification import Notification
+from classes.paymentsBalance import PaymentsBalance
+from classes.regularOperation import RegularOperation
+from classes.regularOperationType import RegularOperationType
 
 
 class DataManager:

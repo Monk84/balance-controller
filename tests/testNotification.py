@@ -1,6 +1,6 @@
 import unittest
 
-import notification
+from classes import notification
 
 
 # ----------------- NOTIFICATION TESTING ----------------

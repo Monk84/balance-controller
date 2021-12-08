@@ -1,4 +1,4 @@
-import const
+import classes.const as const
 
 
 # описание класса типа регулярной операции
