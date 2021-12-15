@@ -47,7 +47,7 @@ class BusinessEntity:
         # getting current balances on init
         cur_dep_balance = DB.get_deposit_balance()
         self.deposit_balance = DepositBalance(cur_dep_balance)
-        self.paym_balance = DB.get_payments_balance() # by default collect info by last 30 days for example
+        self.paym_balance = DB.get_payments_balance()  # by default collect info by last 30 days for example
         # self.payments_balance = PaymentsBalance(cur_paym_balance) # maybe update when we execute the operation?
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
@@ -61,7 +61,6 @@ class BusinessEntity:
                 operation["operation"].update(name, reg_op_type, payment_amount, period, notification_period)
                 DB.change_regular_operation(operation)
                 return
-
 
     def remove_regular_operation(self, operation_id):
         if not isinstance(operation_id, int):
@@ -115,8 +114,7 @@ class BusinessEntity:
         self.regularOperationTypes.append(new_type)
         DB.add_operation_type(new_type)
         return
-        
-    
+
     def remove_regular_operation_type(self, name):
         # search for exists op types(even deleted)
         for op_type in self.regularOperationTypes:
@@ -139,10 +137,10 @@ class BusinessEntity:
         except:
             raise TypeError("send_notification(): Invalid notification format and data")
     
-        return { "message" : current_notify.get_notification()}
+        return {"message": current_notify.get_notification()}
 
     def get_period_of_operations(self):
-        return { "period" : [number for number in range(1, 32)]}
+        return {"period": [number for number in range(1, 32)]}
   
     def set_period_of_operations(self, current_regular_operation_id, new_period):
         index = None
@@ -151,16 +149,15 @@ class BusinessEntity:
                 index = i
                 break
                 
-        if index == None or index < 0:
+        if index is None or index < 0:
             raise TypeError("set_period_of_operations: Invalid operation id")
        
         if isinstance(new_period, int): 
-                if new_period <= 0:
-                    raise TypeError("set_period_of_operations(): Set positive integer for the period value")
+            if new_period <= 0:
+                raise TypeError("set_period_of_operations(): Set positive integer for the period value")
         else:
             raise TypeError("set_period_of_operations(): Set positive integer for the period value")
 
-        
         self.regularOperations[index].update(period=timedelta(new_period))
         
         DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})   
@@ -177,7 +174,7 @@ class BusinessEntity:
                 index = i
                 break
         
-        if index == None:
+        if index is None:
             raise TypeError("set_operation_type(): Invalid operation id")
         
         try:
@@ -195,25 +192,25 @@ class BusinessEntity:
                 index = i
                 break
         
-        if index == None:
+        if index is None:
             raise TypeError("get_notifications_settings(): Invalid operation id")
         
         operation = self.regularOperations[index]["operation"].get()
-        return { "data": {
+        return {"data": {
             'period': operation["period"],
             'notification_period': operation["notification_period"],
             'start_date': operation["start_date"]
             }
         }
     
-    def update_notification_settings(self, operation_id, period = None, notification_period = None):
+    def update_notification_settings(self, operation_id, period=None, notification_period=None):
         index = None
         for i in range(len(self.regularOperations)):
             if self.regularOperations[i]["id"] == operation_id:
                 index = i
                 break
         
-        if index == None:
+        if index is None:
             raise TypeError("update_notification_settings(): Invalid operation id")
         
         if not period and not notification_period:
@@ -244,7 +241,7 @@ class BusinessEntity:
             if self.regularOperations[i]["id"] == operation_id:
                 index = i
                 break
-        if index == None:
+        if index is None:
             raise TypeError("get_notifications_settings(): Invalid operation id")
         
         operation = self.regularOperations[index]["operation"].get()
@@ -276,7 +273,11 @@ class BusinessEntity:
         self.deposit_balance.update(new_limit, new_period)
     
     def daily_check(self):
-        if self.deposit_balance.apply_reg_ops(self.regularOperations):
+        is_dep_balance_exceeded = False
+        for op in self.regularOperations:
+            if self.deposit_balance.apply_reg_operation(op):
+                is_dep_balance_exceeded = True
+        if is_dep_balance_exceeded:
             print(self.deposit_balance.get_notification().get_notification())
         DB.set_deposit_balance(self.deposit_balance.get_balance())
         
@@ -288,3 +289,4 @@ class BusinessEntity:
         for op in operations_to_recover:
             DB.activate_regular_operation(op)
             op.add()
+
