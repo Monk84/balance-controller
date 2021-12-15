@@ -43,6 +43,7 @@ class DataManager:
         return
         
     def change_deposit_balance(self, new_balance):
+        #TODO need to create history in db
         """
         Updates current deposit balance.
         :argument new_balance: int
@@ -137,4 +138,15 @@ class DataManager:
         result = [{"name": "Аренда", "active": True},
                   {"name": "Кредит", "active": True},
                   {"name": "Тестовый", "active": False}]
+        return result
+    
+    def get_payments_balance(self):
+        #TODO go through the history of payments and summ the payment amount
+        """
+        Getting the payments balance for the period
+        :param {int} days
+        :param {float} payment_amount
+        :param {int} current_payment_limit
+        """
+        result = {"days": 30, "payment_amount": 15, "current_payment_limit": 150}
         return result

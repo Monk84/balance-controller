@@ -47,8 +47,8 @@ class BusinessEntity:
         # getting current balances on init
         cur_dep_balance = DB.get_deposit_balance()
         self.deposit_balance = DepositBalance(cur_dep_balance)
-        cur_paym_balance = DB.get_paymenst_balance()
-        self.payments_balance = PaymentsBalance(cur_paym_balance) # constructor must be another
+        self.paym_balance = DB.get_payments_balance() # by default collect info by last 30 days for example
+        # self.payments_balance = PaymentsBalance(cur_paym_balance) # maybe update when we execute the operation?
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)
@@ -70,7 +70,7 @@ class BusinessEntity:
             operation = self.regularOperations[i]
             if operation["id"] == operation_id:
                 operation["operation"].delete()
-                DB.remove_regular_operation(op)
+                DB.remove_regular_operation(operation)
                 self.regularOperations.pop(i)
                 return True
         return False
