@@ -1,6 +1,7 @@
+from typing import Type
 import unittest
 from datetime import date, timedelta, datetime
-
+from classes.regularOperationType import RegularOperationType
 from classes.businessEntity import BusinessEntity
 
 
@@ -127,12 +128,12 @@ class TestBusinessEntity(unittest.TestCase):
 
     def test_send_wrong_notification(self):
         application = BusinessEntity()
-        res = application.send_notification(None, None)
-        self.assertEqual(res,  {'message': 'Invalid notification format and data'})
-        res = application.send_notification(None, "HELLO")
-        self.assertEqual(res,  {'message': 'Invalid notification format and data'})
-        res = application.send_notification("HELLO", None)
-        self.assertEqual(res,  {'message': 'Invalid notification format and data'})
+        with self.assertRaises(TypeError):
+            application.send_notification(None, None)
+        with self.assertRaises(TypeError):
+            application.send_notification(None, "HELLO")
+        with self.assertRaises(TypeError):
+            application.send_notification("HELLO", None)
 
     def test_send_right_notification(self):
         application = BusinessEntity()
@@ -144,5 +145,106 @@ class TestBusinessEntity(unittest.TestCase):
         res = application.get_period_of_operations()
         self.assertEqual(res, { "period" : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]})
 
+    # check with other values later
+    def test_get_balance(self):
+        application = BusinessEntity()
+        self.assertEqual(application.get_balance(), 0)
     
+    def test_right_set_period_of_operations(self):
+        application = BusinessEntity()
+        application.add_regular_operation("Special name", application.regularOperationTypes[0], 12,
+                                          timedelta(30), timedelta(2), date(2020, 2, 1))     
+        application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
+                                          timedelta(30), timedelta(2), date(2020, 6, 7))    
+        self.assertEqual(application.set_period_of_operations(1, 8), {'message': 'Successfully update period'})
+    
+    def test_wrong_set_period_of_operations(self):
+        application = BusinessEntity()
+        application.add_regular_operation("Special name", application.regularOperationTypes[0], 12,
+                                          timedelta(30), timedelta(2), date(2020, 2, 1))     
+        application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
+                                          timedelta(30), timedelta(2), date(2020, 6, 7))    
+        with self.assertRaises(TypeError):
+            application.set_period_of_operations(15, 8)
+        with self.assertRaises(TypeError):
+            application.set_period_of_operations(1, -5)
+        with self.assertRaises(TypeError):
+            application.set_period_of_operations(1, 5.2)
+    
+#TODO if empty data from DB (for all tests?)
 
+    def test_get_operation_types(self):
+        application = BusinessEntity()
+        application.add_regular_operation("Special name", application.regularOperationTypes[0], 12,
+                                          timedelta(30), timedelta(2), date(2020, 2, 1))     
+        application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
+                                          timedelta(30), timedelta(2), date(2020, 6, 7))      
+        self.assertEqual(application.get_operation_types(), ["{'name': 'Аренда', 'op_type': 1, 'status': True}", "{'name': 'Кредит', 'op_type': 1, 'status': True}", "{'name': 'Тестовый', 'op_type': 1, 'status': False}"])
+
+    def test_wrong_set_operation_type(self):
+        application = BusinessEntity()
+        application.add_regular_operation("Special name", application.regularOperationTypes[0], 12,
+                                          timedelta(30), timedelta(2), date(2020, 2, 1))     
+        application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
+                                          timedelta(30), timedelta(2), date(2020, 6, 7))      
+        regular_operation_type = RegularOperationType("Покупка", True)
+        with self.assertRaises(TypeError):
+            application.set_operation_type(45, "dsdsd")
+        with self.assertRaises(TypeError):
+            application.set_operation_type(1, "dsdsd")
+        
+    def test_right_set_operation_type(self):
+        application = BusinessEntity()
+        application.add_regular_operation("Special name", application.regularOperationTypes[0], 12,
+                                          timedelta(30), timedelta(2), date(2020, 2, 1))     
+        application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
+                                          timedelta(30), timedelta(2), date(2020, 6, 7))      
+        regular_operation_type = RegularOperationType("Покупка", True)
+        self.assertEqual(application.set_operation_type(1, regular_operation_type),  {'message': 'Successfully update type'})
+    
+    def test_wrong_get_notifications_settings(self):
+        application = BusinessEntity()
+        with self.assertRaises(TypeError):
+            application.get_notifications_settings(45)
+    
+    def test_right_get_notification_settings(self):
+        application = BusinessEntity()
+        self.assertEqual(application.get_notifications_settings(1), {'data': {'period': timedelta(days=12), 'notification_period': timedelta(days=23), 'start_date': date(2020, 1, 1)}})
+    
+    def test_wrong_update_notification_settings(self):
+        application = BusinessEntity()
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(88)
+        
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, None, None)
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, -8, None)
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, period=2.5)
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, period="ddsdsads")
+        
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, None, None)
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, None, -4)
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, notification_period=2.5)
+        with self.assertRaises(TypeError):
+            application.update_notification_settings(1, notification_period="ddsdsads")
+    
+    def test_right_update_notification_settings(self):
+        application = BusinessEntity()
+        self.assertEqual(application.update_notification_settings(1, period=8), {'message': 'Successfully update notification settings'})
+        self.assertEqual(application.update_notification_settings(1, notification_period=1), {'message': 'Successfully update notification settings'})
+        self.assertEqual(application.update_notification_settings(1, 7, 6 ), {'message': 'Successfully update notification settings'})
+    
+    def test_wrong_execute_operation(self):
+        application = BusinessEntity()
+        with self.assertRaises(TypeError):
+            application.execute_operation(88)
+
+    def test_right_execute_operation(self):        
+        application = BusinessEntity()
+        self.assertEqual(application.execute_operation(1), {'message': 'Successfully updated deposit balance'})
