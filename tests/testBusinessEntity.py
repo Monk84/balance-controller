@@ -1,4 +1,5 @@
 from typing import Type
+import classes.const as const
 import unittest
 from datetime import date, timedelta, datetime
 from classes.regularOperationType import RegularOperationType
@@ -248,3 +249,48 @@ class TestBusinessEntity(unittest.TestCase):
     def test_right_execute_operation(self):        
         application = BusinessEntity()
         self.assertEqual(application.execute_operation(1), {'message': 'Successfully updated deposit balance'})
+
+    def test_wrong_delete_reg_op(self):
+        application = BusinessEntity()
+        self.assertFalse(application.remove_regular_operation_type("Кедит"))
+
+    def test_right_delete_reg_op(self):
+        application = BusinessEntity()
+        self.assertTrue(application.remove_regular_operation_type("Кредит"))
+
+    def test_show_operations(self):
+        application = BusinessEntity()
+        self.assertEqual(len(application.show_operations()), 2)
+
+    def test_wrong_set_payments_limit(self):
+        application = BusinessEntity()
+        cases = [(123, 12), ('123', timedelta(days=1))]
+        for c in cases:
+            with self.subTest(c=c):
+                with self.assertRaises(TypeError):
+                    application.set_payments_limit(c[0], c[1])
+
+    def test_right_set_payments_limit(self):
+        application = BusinessEntity()
+        application.set_payments_limit(123, timedelta(days=1))
+        self.assertEqual(1, 1)
+
+    def test_wrong_set_balance_limit(self):
+        application = BusinessEntity()
+        cases = ['123']
+        for c in cases:
+            with self.subTest(c=c):
+                with self.assertRaises(TypeError):
+                    application.set_balance_limit(c)
+
+    def test_right_set_balance_limit(self):
+        application = BusinessEntity()
+        application.set_balance_limit(123)
+        self.assertEqual(1, 1)
+
+    def test_secret_menu_recovery(self):
+        application = BusinessEntity()
+        op_to_remove = application.show_operations()[0][1]
+        application.remove_regular_operation(1)
+        application.secret_menu_recovery([op_to_remove])
+        self.assertEqual(len(application.show_operations()), 1)

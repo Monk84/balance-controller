@@ -41,14 +41,21 @@ class BusinessEntity:
                         year=int(operation["start_date"][:4]),
                         month=int(operation["start_date"][5:7]),
                         day=int(operation["start_date"][8:]))
-                    new_reg_op = RegularOperation(operation["name"], op_type, operation["payment_amount"], period, notification_period, start_date)
+                    new_reg_op = RegularOperation(operation["name"], op_type, operation["payment_amount"], period,
+                                                  notification_period, start_date)
                     self.regularOperations.append({"id": operation["id"], "operation": new_reg_op})
 
         # getting current balances on init
         cur_dep_balance = DB.get_deposit_balance()
         self.deposit_balance = DepositBalance(cur_dep_balance)
-        self.paym_balance = DB.get_payments_balance()  # by default collect info by last 30 days for example
-        # self.payments_balance = PaymentsBalance(cur_paym_balance) # maybe update when we execute the operation?
+        cur_paym_balance = DB.get_payments_balance()  # by default collect info by last 30 days for example
+        self.payments_balance = PaymentsBalance(cur_paym_balance['current_payment_limit'],
+                                                timedelta(days=cur_paym_balance['days']))
+        self.payments_balance.apply_reg_operations([RegularOperation('', RegularOperationType('', True),
+                                                                     cur_paym_balance["payment_amount"],
+                                                                     timedelta(days=1),
+                                                                     timedelta(days=1),
+                                                                     date.today())])
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)
@@ -118,18 +125,12 @@ class BusinessEntity:
     def remove_regular_operation_type(self, name):
         # search for exists op types(even deleted)
         for op_type in self.regularOperationTypes:
-            if op_type.name == name:
+            if op_type.get_name() == name:
                 # found exist one
                 op_type.delete()
                 DB.deactivate_operation_type(op_type)
-                return
-        # adding a new one
-        new_type = RegularOperationType(name, True)
-        if not isinstance(new_type, RegularOperationType):
-            return
-        self.regularOperationTypes.append(new_type)
-        DB.add_operation_type(new_type)
-        return
+                return True
+        return False
    
     def send_notification(self, notification_format, notification_type):
         try:
@@ -165,7 +166,7 @@ class BusinessEntity:
 
     def get_operation_types(self):
         items = self.regularOperationTypes
-        return [x.__repr__() for x in items]
+        return [x.__repr__() for x in items if x.get_op_type() == const.REG_OP_STATUS_ACTIVE]
 
     def set_operation_type(self, operation_id, type):
         index = None 
@@ -255,22 +256,22 @@ class BusinessEntity:
 
     def show_operations(self):
         ops_to_sort = []
-        today = datetime.date.today()
-        for op in self.regularOperations:
+        today = date.today()
+        for op in [x for x in self.regularOperations if x['operation'].get()['status'] == const.REG_OP_STATUS_ACTIVE]:
             op_attrs = op['operation'].get()
             start_date = op_attrs['start_date']
             period = op_attrs['period']
             i = 0
             while today > start_date + period * i:
                 i += 1
-            ops_to_sort += [(today - (start_date + period * (i - 1)).days, op)]
-        return sorted(ops_to_sort, key=lambda x : x[1])
+            ops_to_sort += [((today - (start_date + period * (i - 1))).days, op)]
+        return sorted(ops_to_sort, key=lambda x: x[0])
     
     def set_payments_limit(self, new_limit=None, new_period=None):
         self.payments_balance.update(new_limit, new_period)
     
-    def set_balance_limit(self, new_limit=None, new_period=None):
-        self.deposit_balance.update(new_limit, new_period)
+    def set_balance_limit(self, new_limit=None):
+        self.deposit_balance.set_limit(new_limit)
     
     def daily_check(self):
         is_dep_balance_exceeded = False
@@ -281,12 +282,12 @@ class BusinessEntity:
             print(self.deposit_balance.get_notification().get_notification())
         DB.set_deposit_balance(self.deposit_balance.get_balance())
         
-        if self.payments_balance.apply_reg_ops(self.regularOperations):
+        if self.payments_balance.apply_reg_operations(self.regularOperations):
             print(self.payments_balance.get_notification().get_notification())
-        DB.set_payments_balance(self.payments_balance.get_balance())
+        #  DB.set_payments_balance(self.payments_balance.get_balance())
 
     def secret_menu_recovery(self, operations_to_recover):
         for op in operations_to_recover:
             DB.activate_regular_operation(op)
-            op.add()
+            op['operation'].add()
 

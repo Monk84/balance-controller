@@ -141,11 +141,11 @@ class DataManager:
         return result
     
     def get_payments_balance(self):
-        #TODO go through the history of payments and summ the payment amount
+        # TODO go through the history of payments and sum the payment amount
         """
         Getting the payments balance for the period
         :param {int} days
-        :param {float} payment_amount
+        :param {int} payment_amount
         :param {int} current_payment_limit
         """
         result = {"days": 30, "payment_amount": 15, "current_payment_limit": 150}
