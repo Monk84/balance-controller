@@ -1,6 +1,7 @@
 from typing import Type
 import classes.const as const
-from classes.dataManager import DataManager
+# from classes.dataManager import DataManager
+from classes.basicGateway import BasicGateway
 from classes.depositBalance import DepositBalance
 from classes.notification import Notification
 from classes.paymentsBalance import PaymentsBalance
@@ -9,8 +10,8 @@ from classes.regularOperationType import RegularOperationType
 from datetime import date, timedelta, datetime
 from classes.notification import Notification
 import re
-DB = DataManager()
-
+# DB = DataManager()
+DB = BasicGateway()
 
 class BusinessEntity:
     # regularOperations = []
@@ -18,41 +19,15 @@ class BusinessEntity:
 
     def __init__(self):
         # getting operation types
-        self.regularOperationTypes = []
-        all_types = DB.get_operation_types()
-        for op_type in all_types:
-            # we do not use op_type in RegularOperationType __init__
-            new_op_type = RegularOperationType(op_type["name"], const.REG_OP_STATUS_ACTIVE)
-            if not op_type["active"]:
-                new_op_type.delete()
-            self.regularOperationTypes.append(new_op_type)
-
+        self.regularOperationTypes =  DB.get_operation_types() #[]
         # getting active regular operations
-        self.regularOperations = []
-        active_operations = DB.get_active_regular_operations()
-        for operation in active_operations:
-            # searching for RegularOperationType
-            for op_type in self.regularOperationTypes:
-                if op_type.name == operation["reg_op_type"]:
-                    # building dates and RegularOperation
-                    period = timedelta(days=int(operation["period"]))   # IMPORTANT FORMAT OF TIMEDELTA
-                    notification_period = timedelta(days=operation["notification_period"])
-                    start_date = date(
-                        year=int(operation["start_date"][:4]),
-                        month=int(operation["start_date"][5:7]),
-                        day=int(operation["start_date"][8:]))
-                    new_reg_op = RegularOperation(operation["name"], op_type, operation["payment_amount"], period,
-                                                  notification_period, start_date)
-                    self.regularOperations.append({"id": operation["id"], "operation": new_reg_op})
-
+        self.regularOperations = DB.get_active_regular_operations()#[]
         # getting current balances on init
-        cur_dep_balance = DB.get_deposit_balance()
-        self.deposit_balance = DepositBalance(cur_dep_balance)
-        cur_paym_balance = DB.get_payments_balance()  # by default collect info by last 30 days for example
-        self.payments_balance = PaymentsBalance(cur_paym_balance['current_payment_limit'],
-                                                timedelta(days=cur_paym_balance['days']))
+        self.deposit_balance = DB.get_deposit_balance()
+        self.payments_balance,cur_paym_balance = DB.get_payments_balance() #TODO тут не очень нравится, что возвращается 
+        # так 2 значения. Будто немного костыльно. Чекнуть и мб переписать
         self.payments_balance.apply_reg_operations([RegularOperation('', RegularOperationType('', True),
-                                                                     cur_paym_balance["payment_amount"],
+                                                                     cur_paym_balance,
                                                                      timedelta(days=1),
                                                                      timedelta(days=1),
                                                                      date.today())])
@@ -62,6 +37,7 @@ class BusinessEntity:
         new_id = DB.add_regular_operation(new_reg)
         self.regularOperations.append({"id": new_id, "operation": new_reg})
 
+    #TODO не работает, когда названия name и req_op_type в операции отличаются (стр 12-14 в basicGateWay)
     def change_regular_operation(self, operation_id, name, reg_op_type, payment_amount, period, notification_period):
         for operation in self.regularOperations:
             if operation["id"] == operation_id:
@@ -76,7 +52,7 @@ class BusinessEntity:
             operation = self.regularOperations[i]
             if operation["id"] == operation_id:
                 operation["operation"].delete()
-                DB.remove_regular_operation(operation)
+                DB.remove_regular_operation(operation) #TODO было достаточно айдишника, есть смысл поменять
                 self.regularOperations.pop(i)
                 return True
         return False
@@ -88,6 +64,7 @@ class BusinessEntity:
         DB.change_deposit_balance(new_balance)
 
     def form_statistics_by_period(self, tag, start_date, end_date):
+        #TODO in the code were just a string
         if not isinstance(tag, str):
             raise TypeError("form_statistics_by_period(): expected str for tag")
         if not isinstance(start_date, str):
@@ -114,7 +91,7 @@ class BusinessEntity:
             if op_type.name == name:
                 # found exist one
                 op_type.add()
-                DB.activate_operation_type(op_type)
+                DB.activate_operation_type(op_type) #TODO maybe id is ehough?
                 return
         # adding a new one
         new_type = RegularOperationType(name, True)
@@ -178,10 +155,7 @@ class BusinessEntity:
         if index is None:
             raise TypeError("set_operation_type(): Invalid operation id")
         
-        try:
-            self.regularOperations[index]["operation"].update(reg_op_type=type)
-        except Exception:
-            raise TypeError("set_operation_type(): Set correct RegularOperationType for update")
+        self.regularOperations[index]["operation"].update(reg_op_type=type)
         
         DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})
         return {"message": "Successfully update type"}
