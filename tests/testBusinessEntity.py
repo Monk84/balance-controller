@@ -30,12 +30,20 @@ class TestBusinessEntity(unittest.TestCase):
 
     def test_right_change_regular_operation(self):
         application = BusinessEntity()
+        application.show_operations()
         application.change_regular_operation(1, "Special name", application.regularOperationTypes[0],
                                              12, timedelta(30), timedelta(2))
         self.assertEqual("Special name", application.regularOperations[0]["operation"].name)
 
+    def test_wrong_order_change_regular_operation(self):
+        application = BusinessEntity()
+        with self.assertRaises(KeyError):
+            application.change_regular_operation(1, "Special name", application.regularOperationTypes[0],
+                                                 12, timedelta(30), timedelta(2))
+
     def test_wrong_change_regular_operation(self):
         application = BusinessEntity()
+        application.show_operations()
         with self.assertRaises(TypeError):
             application.change_regular_operation(2, 11, application.regularOperationTypes[0],
                                                  12, timedelta(30), timedelta(2))
@@ -44,6 +52,7 @@ class TestBusinessEntity(unittest.TestCase):
 
     def test_missing_change_regular_operation(self):
         application = BusinessEntity()
+        application.show_operations()
         application.change_regular_operation(12314124, "Special name", application.regularOperationTypes[0],
                                              12, timedelta(30), timedelta(2))
         for i in range(len(application.regularOperations)):
@@ -51,29 +60,44 @@ class TestBusinessEntity(unittest.TestCase):
 
     def test_right_remove_regular_operation(self):
         application = BusinessEntity()
+        application.show_operations()
         application.remove_regular_operation(1)
         for i in range(len(application.regularOperations)):
             self.assertNotEqual("Кредит за машину", application.regularOperations[i]["operation"].name)
             self.assertNotEqual(1, application.regularOperations[i]["id"])
 
+    def test_wrong_order_remove_regular_operation(self):
+        application = BusinessEntity()
+        with self.assertRaises(KeyError):
+            application.remove_regular_operation(1)
+
     def test_wrong_remove_regular_operation(self):
         application = BusinessEntity()
+        application.show_operations()
         with self.assertRaises(TypeError):
             application.remove_regular_operation('id')
             self.assertEqual(1, application.regularOperations[0]["id"])
 
     def test_missing_remove_regular_operation(self):
         application = BusinessEntity()
+        application.show_operations()
         application.remove_regular_operation(1234124)
         self.assertEqual(2, len(application.regularOperations))
 
     def test_right_change_deposit_balance(self):
         application = BusinessEntity()
+        application.get_balance()
         application.change_deposit_balance(123456)
         self.assertEqual(123456, application.deposit_balance.balance)
 
+    def test_wrong_order_change_deposit_balance(self):
+        application = BusinessEntity()
+        with self.assertRaises(KeyError):
+            application.change_deposit_balance(123456)
+
     def test_wrong_change_deposit_balance(self):
         application = BusinessEntity()
+        application.get_balance()
         with self.assertRaises(TypeError):
             application.change_deposit_balance("new value")
             self.assertNotEqual("new value", application.deposit_balance.balance)
@@ -113,16 +137,24 @@ class TestBusinessEntity(unittest.TestCase):
 
     def test_right_add_regular_operation_type(self):
         application = BusinessEntity()
+        application.get_operation_types()
         application.add_regular_operation_type("Special name")
         self.assertEqual("Special name", application.regularOperationTypes[-1].name)
 
+    def test_wrong_order_add_regular_operation_type(self):
+        application = BusinessEntity()
+        with self.assertRaises(KeyError):
+            application.add_regular_operation_type("Special name")
+
     def test_add_disabled_regular_operation_type(self):
         application = BusinessEntity()
+        application.get_operation_types()
         application.add_regular_operation_type("Тестовый")
         self.assertEqual(3, len(application.regularOperationTypes))
 
     def test_wrong_add_regular_operation_type(self):
         application = BusinessEntity()
+        application.get_operation_types()
         with self.assertRaises(TypeError):
             application.add_regular_operation_type(123)
             for i in range(len(application.regularOperations)):
@@ -251,13 +283,20 @@ class TestBusinessEntity(unittest.TestCase):
         application = BusinessEntity()
         self.assertEqual(application.execute_operation(1), {'message': 'Successfully updated deposit balance'})
 
-    def test_wrong_delete_reg_op(self):
+    def test_wrong_delete_reg_op_type(self):
         application = BusinessEntity()
+        application.get_operation_types()
         self.assertFalse(application.remove_regular_operation_type("Кедит"))
 
-    def test_right_delete_reg_op(self):
+    def test_right_delete_reg_op_type(self):
         application = BusinessEntity()
+        application.get_operation_types()
         self.assertTrue(application.remove_regular_operation_type("Кредит"))
+
+    def test_wrong_order_delete_reg_op_type(self):
+        application = BusinessEntity()
+        with self.assertRaises(KeyError):
+            self.assertTrue(application.remove_regular_operation_type("Кредит"))
 
     def test_show_operations(self):
         application = BusinessEntity()

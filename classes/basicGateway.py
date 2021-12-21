@@ -30,7 +30,7 @@ class BasicGateway(GatewayInterface):
         #TODO maybe return ID too?
         result = []
         for op_type in self.regular_operations:
-            new_op_type = RegularOperationType(op_type["name"], const.REG_OP_STATUS_ACTIVE)
+            new_op_type = RegularOperationType(op_type["name"], const.REG_OP_STATUS_ACTIVE) # TODO Не пойму почему тут имя а не тип, но иначе не работает...
             if not op_type["active"]:
                 new_op_type.delete()
             result.append(new_op_type)

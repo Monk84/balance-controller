@@ -18,6 +18,10 @@ class BusinessEntity:
     # regularOperationTypes = [] -- why?
 
     def __init__(self):
+        # setting flags
+        self.is_balance_displayed = False
+        self.is_reg_displayed = False
+        self.is_reg_op_types_displayed = False
         # getting operation types
         self.regularOperationTypes =  DB.get_operation_types() #[]
         # getting active regular operations
@@ -39,6 +43,8 @@ class BusinessEntity:
 
     #TODO не работает, когда названия name и req_op_type в операции отличаются (стр 12-14 в basicGateWay)
     def change_regular_operation(self, operation_id, name, reg_op_type, payment_amount, period, notification_period):
+        if not self.is_reg_displayed:
+            raise KeyError("Wrong order")
         for operation in self.regularOperations:
             if operation["id"] == operation_id:
                 operation["operation"].update(name, reg_op_type, payment_amount, period, notification_period)
@@ -46,6 +52,8 @@ class BusinessEntity:
                 return
 
     def remove_regular_operation(self, operation_id):
+        if not self.is_reg_displayed:
+            raise KeyError("Wrong order")
         if not isinstance(operation_id, int):
             raise TypeError('Expected RegularOperationType as regular operation type')
         for i in range(len(self.regularOperations)):
@@ -58,6 +66,9 @@ class BusinessEntity:
         return False
 
     def change_deposit_balance(self, new_balance=0):
+        if not self.is_balance_displayed:
+            raise KeyError("Wrong order")
+        self.is_balance_displayed = False
         if not isinstance(new_balance, int):
             raise TypeError("PaymentBalance: expected int for new_limit")
         self.deposit_balance.set_balance(new_balance)
@@ -86,6 +97,8 @@ class BusinessEntity:
         return {"total_income": total_income, "total_spend": total_spend, "start_date": start_date, "end_date": end_date}
 
     def add_regular_operation_type(self, name):
+        if not self.is_reg_op_types_displayed:
+            raise KeyError("Wrong order")
         # search for exists op types(even deleted)
         for op_type in self.regularOperationTypes:
             if op_type.name == name:
@@ -100,6 +113,8 @@ class BusinessEntity:
         return
 
     def remove_regular_operation_type(self, name):
+        if not self.is_reg_op_types_displayed:
+            raise KeyError("Wrong order")
         # search for exists op types(even deleted)
         for op_type in self.regularOperationTypes:
             if op_type.get_name() == name:
@@ -142,6 +157,7 @@ class BusinessEntity:
         return {"message": "Successfully update period"}
 
     def get_operation_types(self):
+        self.is_reg_op_types_displayed = True
         items = self.regularOperationTypes
         return [x.__repr__() for x in items if x.get_op_type() == const.REG_OP_STATUS_ACTIVE]
 
@@ -226,9 +242,11 @@ class BusinessEntity:
         return {"message": "Successfully updated deposit balance"}
     
     def get_balance(self):
+        self.is_balance_displayed = True
         return self.deposit_balance.get_balance()
 
     def show_operations(self):
+        self.is_reg_displayed = True
         ops_to_sort = []
         today = date.today()
         for op in [x for x in self.regularOperations if x['operation'].get()['status'] == const.REG_OP_STATUS_ACTIVE]:
