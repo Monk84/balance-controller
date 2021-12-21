@@ -189,7 +189,8 @@ class TestBusinessEntity(unittest.TestCase):
         application.add_regular_operation("Special name", application.regularOperationTypes[0], 12,
                                           timedelta(30), timedelta(2), date(2020, 2, 1))     
         application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
-                                          timedelta(30), timedelta(2), date(2020, 6, 7))    
+                                          timedelta(30), timedelta(2), date(2020, 6, 7))  
+        application.get_period_of_operations()  
         self.assertEqual(application.set_period_of_operations(2, 8), {'message': 'Successfully update period'})
     
     def test_wrong_set_period_of_operations(self):
@@ -198,6 +199,9 @@ class TestBusinessEntity(unittest.TestCase):
                                           timedelta(30), timedelta(2), date(2020, 2, 1))     
         application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
                                           timedelta(30), timedelta(2), date(2020, 6, 7))    
+        with self.assertRaises(KeyError):
+            self.assertEqual(application.set_period_of_operations(2, 8), {'message': 'Successfully update period'})
+        application.get_period_of_operations()
         with self.assertRaises(TypeError):
             application.set_period_of_operations(15, 8)
         with self.assertRaises(TypeError):
@@ -222,6 +226,9 @@ class TestBusinessEntity(unittest.TestCase):
         application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
                                           timedelta(30), timedelta(2), date(2020, 6, 7))      
         regular_operation_type = RegularOperationType("Покупка", True)
+        with self.assertRaises(KeyError):
+            self.assertEqual(application.set_operation_type(2, regular_operation_type),  {'message': 'Successfully update type'})
+        application.get_operation_types()
         with self.assertRaises(TypeError):
             application.set_operation_type(45, "dsdsd")
         with self.assertRaises(TypeError):
@@ -234,6 +241,7 @@ class TestBusinessEntity(unittest.TestCase):
         application.add_regular_operation("Other name", application.regularOperationTypes[0], 28,
                                           timedelta(30), timedelta(2), date(2020, 6, 7))      
         regular_operation_type = RegularOperationType("Покупка", True)
+        application.get_operation_types()
         self.assertEqual(application.set_operation_type(2, regular_operation_type),  {'message': 'Successfully update type'})
     
     def test_wrong_get_notifications_settings(self):

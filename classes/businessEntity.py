@@ -22,14 +22,14 @@ class BusinessEntity:
         self.is_balance_displayed = False
         self.is_reg_displayed = False
         self.is_reg_op_types_displayed = False
+        self.is_period_list_displayed = False
         # getting operation types
         self.regularOperationTypes =  DB.get_operation_types() #[]
         # getting active regular operations
         self.regularOperations = DB.get_active_regular_operations()#[]
         # getting current balances on init
         self.deposit_balance = DB.get_deposit_balance()
-        self.payments_balance,cur_paym_balance = DB.get_payments_balance() #TODO тут не очень нравится, что возвращается 
-        # так 2 значения. Будто немного костыльно. Чекнуть и мб переписать
+        self.payments_balance,cur_paym_balance = DB.get_payments_balance()
         self.payments_balance.apply_reg_operations([RegularOperation('', RegularOperationType('', True),
                                                                      cur_paym_balance,
                                                                      timedelta(days=1),
@@ -133,9 +133,12 @@ class BusinessEntity:
         return {"message": current_notify.get_notification()}
 
     def get_period_of_operations(self):
+        self.is_period_list_displayed = True
         return {"period": [number for number in range(1, 32)]}
   
     def set_period_of_operations(self, current_regular_operation_id, new_period):
+        if not self.is_period_list_displayed:
+            raise KeyError("wrong order")
         index = None
         for i in range(len(self.regularOperations)):
             if self.regularOperations[i]["id"] == current_regular_operation_id:
@@ -154,6 +157,7 @@ class BusinessEntity:
         self.regularOperations[index].update(period=timedelta(new_period))
         
         DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})   
+        self.is_period_list_displayed = False
         return {"message": "Successfully update period"}
 
     def get_operation_types(self):
@@ -162,6 +166,8 @@ class BusinessEntity:
         return [x.__repr__() for x in items if x.get_op_type() == const.REG_OP_STATUS_ACTIVE]
 
     def set_operation_type(self, operation_id, type):
+        if not self.is_reg_op_types_displayed:
+            raise KeyError("Wrong order")
         index = None 
         for i in range(len(self.regularOperations)):
             if self.regularOperations[i]["id"] == operation_id:
@@ -174,6 +180,7 @@ class BusinessEntity:
         self.regularOperations[index]["operation"].update(reg_op_type=type)
         
         DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})
+        self.is_reg_op_types_displayed = False
         return {"message": "Successfully update type"}
 
     def get_notifications_settings(self, operation_id):
