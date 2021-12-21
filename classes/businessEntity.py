@@ -11,7 +11,6 @@ from datetime import date, timedelta, datetime
 from classes.notification import Notification
 import re
 # DB = DataManager()
-DB = BasicGateway()
 
 class BusinessEntity:
     # regularOperations = []
@@ -19,17 +18,18 @@ class BusinessEntity:
 
     def __init__(self):
         # setting flags
+        self.DB = BasicGateway()
         self.is_balance_displayed = False
         self.is_reg_displayed = False
         self.is_reg_op_types_displayed = False
         self.is_period_list_displayed = False
         # getting operation types
-        self.regularOperationTypes =  DB.get_operation_types() #[]
+        self.regularOperationTypes =  self.DB.get_operation_types()
         # getting active regular operations
-        self.regularOperations = DB.get_active_regular_operations()#[]
+        self.regularOperations = self.DB.get_active_regular_operations()
         # getting current balances on init
-        self.deposit_balance = DB.get_deposit_balance()
-        self.payments_balance,cur_paym_balance = DB.get_payments_balance()
+        self.deposit_balance = self.DB.get_deposit_balance()
+        self.payments_balance,cur_paym_balance = self.DB.get_payments_balance()
         self.payments_balance.apply_reg_operations([RegularOperation('', RegularOperationType('', True),
                                                                      cur_paym_balance,
                                                                      timedelta(days=1),
@@ -38,7 +38,7 @@ class BusinessEntity:
 
     def add_regular_operation(self, name, reg_op_type, payment_amount, period, notification_period, start_date):
         new_reg = RegularOperation(name, reg_op_type, payment_amount, period, notification_period, start_date)
-        new_id = DB.add_regular_operation(new_reg)
+        new_id = self.DB.add_regular_operation(new_reg)
         self.regularOperations.append({"id": new_id, "operation": new_reg})
 
     #TODO не работает, когда названия name и req_op_type в операции отличаются (стр 12-14 в basicGateWay)
@@ -48,7 +48,7 @@ class BusinessEntity:
         for operation in self.regularOperations:
             if operation["id"] == operation_id:
                 operation["operation"].update(name, reg_op_type, payment_amount, period, notification_period)
-                DB.change_regular_operation(operation)
+                self.DB.change_regular_operation(operation)
                 return
 
     def remove_regular_operation(self, operation_id):
@@ -60,7 +60,7 @@ class BusinessEntity:
             operation = self.regularOperations[i]
             if operation["id"] == operation_id:
                 operation["operation"].delete()
-                DB.remove_regular_operation(operation) #TODO было достаточно айдишника, есть смысл поменять
+                self.DB.remove_regular_operation(operation) #TODO было достаточно айдишника, есть смысл поменять
                 self.regularOperations.pop(i)
                 return True
         return False
@@ -72,7 +72,7 @@ class BusinessEntity:
         if not isinstance(new_balance, int):
             raise TypeError("PaymentBalance: expected int for new_limit")
         self.deposit_balance.set_balance(new_balance)
-        DB.change_deposit_balance(new_balance)
+        self.DB.change_deposit_balance(new_balance)
 
     def form_statistics_by_period(self, tag, start_date, end_date):
         #TODO in the code were just a string
@@ -86,7 +86,7 @@ class BusinessEntity:
             raise KeyError("Wrong format of start_date")
         if not re.fullmatch(r'^\d{4}-\d{2}-\d{2}$', end_date):
             raise KeyError("Wrong format of end_date")
-        history = DB.get_operations_history_by_operation_type(tag, start_date, end_date)
+        history = self.DB.get_operations_history_by_operation_type(tag, start_date, end_date)
         total_income = 0
         total_spend = 0
         for operation in history:
@@ -104,12 +104,12 @@ class BusinessEntity:
             if op_type.name == name:
                 # found exist one
                 op_type.add()
-                DB.activate_operation_type(op_type) #TODO maybe id is ehough?
+                self.DB.activate_operation_type(op_type) #TODO maybe id is ehough?
                 return
         # adding a new one
         new_type = RegularOperationType(name, True)
         self.regularOperationTypes.append(new_type)
-        DB.add_operation_type(new_type)
+        self.DB.add_operation_type(new_type)
         return
 
     def remove_regular_operation_type(self, name):
@@ -120,7 +120,7 @@ class BusinessEntity:
             if op_type.get_name() == name:
                 # found exist one
                 op_type.delete()
-                DB.deactivate_operation_type(op_type)
+                self.DB.deactivate_operation_type(op_type)
                 return True
         return False
    
@@ -156,7 +156,7 @@ class BusinessEntity:
 
         self.regularOperations[index].update(period=timedelta(new_period))
         
-        DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})   
+        self.DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})   
         self.is_period_list_displayed = False
         return {"message": "Successfully update period"}
 
@@ -179,7 +179,7 @@ class BusinessEntity:
         
         self.regularOperations[index]["operation"].update(reg_op_type=type)
         
-        DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})
+        self.DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})
         self.is_reg_op_types_displayed = False
         return {"message": "Successfully update type"}
 
@@ -230,7 +230,7 @@ class BusinessEntity:
             else:
                 raise TypeError("update_notification_settings(): Set positive integer for the notification_period value")
         
-        DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})     
+        self.DB.change_regular_operation({"id": self.regularOperations[index]["id"], "operation": self.regularOperations[index]["operation"]})     
         return {"message": "Successfully update notification settings"}
 
     def execute_operation(self, operation_id):
@@ -245,7 +245,7 @@ class BusinessEntity:
         operation = self.regularOperations[index]["operation"].get()
 
         self.deposit_balance.set_balance(self.deposit_balance.get_balance() - operation["payment_amount"])
-        DB.change_deposit_balance(self.deposit_balance.get_balance())
+        self.DB.change_deposit_balance(self.deposit_balance.get_balance())
         return {"message": "Successfully updated deposit balance"}
     
     def get_balance(self):
@@ -279,14 +279,14 @@ class BusinessEntity:
                 is_dep_balance_exceeded = True
         if is_dep_balance_exceeded:
             print(self.deposit_balance.get_notification().get_notification())
-        DB.set_deposit_balance(self.deposit_balance.get_balance())
+        self.DB.set_deposit_balance(self.deposit_balance.get_balance())
         
         if self.payments_balance.apply_reg_operations(self.regularOperations):
             print(self.payments_balance.get_notification().get_notification())
-        #  DB.set_payments_balance(self.payments_balance.get_balance())
+        #  self.DB.set_payments_balance(self.payments_balance.get_balance())
 
     def secret_menu_recovery(self, operations_to_recover):
         for op in operations_to_recover:
-            DB.activate_regular_operation(op)
+            self.DB.activate_regular_operation(op)
             op['operation'].add()
 

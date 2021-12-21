@@ -9,10 +9,6 @@ from datetime import date, timedelta
 
 class BasicGateway(GatewayInterface):
     def __init__(self):
-        # self.first_regular_operation = {"id": 1, "name": "Кредит за машину", "reg_op_type": "Кредит", "payment_amount": -123, "period": 12, "notification_period": 23, "start_date": "2020-01-01", "active": True}
-        # self.second_regular_operation = {"id": 2, "name": "Аренда квартиры", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 13, "notification_period": 12, "start_date": "2021-01-01", "active": True}
-        # self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 8, "notification_period": 12, "start_date": "2021-01-01", "active": False}
-
         self.first_regular_operation = {"id": 1, "name": "Кредит", "reg_op_type": "Кредит", "payment_amount": -123, "period": 12, "notification_period": 23, "start_date": "2020-01-01", "active": True}
         self.second_regular_operation = {"id": 2, "name": "Аренда", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 13, "notification_period": 12, "start_date": "2021-01-01", "active": True}
         self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 8, "notification_period": 12, "start_date": "2021-01-01", "active": False}
@@ -27,10 +23,9 @@ class BasicGateway(GatewayInterface):
         :param {list} name
         :param {bool} active
         """
-        #TODO maybe return ID too?
         result = []
         for op_type in self.regular_operations:
-            new_op_type = RegularOperationType(op_type["name"], const.REG_OP_STATUS_ACTIVE) # TODO Не пойму почему тут имя а не тип, но иначе не работает...
+            new_op_type = RegularOperationType(op_type["reg_op_type"], const.REG_OP_STATUS_ACTIVE)
             if not op_type["active"]:
                 new_op_type.delete()
             result.append(new_op_type)

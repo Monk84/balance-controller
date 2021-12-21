@@ -105,7 +105,7 @@ class TestBusinessEntity(unittest.TestCase):
     def test_right_form_statistics_by_period(self):
         application = BusinessEntity()
         result = application.form_statistics_by_period("any_tag", "2020-01-01", "2021-01-01")
-        self.assertEqual(2107, result["total_income"])
+        self.assertEqual(2055, result["total_income"])
         self.assertEqual(-123, result["total_spend"])
 
     def test_wrong_dates_format_form_statistics_by_period(self):
@@ -308,7 +308,7 @@ class TestBusinessEntity(unittest.TestCase):
 
     def test_show_operations(self):
         application = BusinessEntity()
-        self.assertEqual(len(application.show_operations()), 1)
+        self.assertEqual(len(application.show_operations()), 2)
 
     def test_wrong_set_payments_limit(self):
         application = BusinessEntity()
