@@ -1,0 +1,43 @@
+ScreenManager:
+    StartScreen:
+    RegularOperationsScreen:
+    RegularOperationTypesScreen:
+    StatisticsScreen:
+
+<StartScreen>:
+    name: "main"
+    GridLayout:
+        cols: 1
+        GridLayout:
+            cols: 1
+            Label:
+                text: "Контроллер баланса"
+        Button:
+            text: "К регулярным операциям"
+            on_release:
+                app.root.current="reg_ops"
+                root.manager.transition.direction = "left"
+        Button:
+            text: "К статистике"
+            on_release:
+                app.root.current="stats"
+                root.manager.transition.direction = "right"
+
+<RegularOperationsScreen>:
+    name: "reg_ops"
+    Button:
+        text: "Вернуться"
+        on_release:
+            app.root.current="main"
+            root.manager.transition.direction = "right"
+
+<RegularOperationTypesScreen>:
+    name: "reg_op_types"
+
+<StatisticsScreen>:
+    name: "stats"
+    Button:
+        text: "Вернуться"
+        on_release:
+            app.root.current="main"
+            root.manager.transition.direction = "left"
