@@ -3,6 +3,9 @@ ScreenManager:
     RegularOperationsScreen:
     RegularOperationTypesScreen:
     StatisticsScreen:
+    AddRegularOperationScreen:
+    SecretMenuScreen:
+
 
 <StartScreen>:
     name: "main"
@@ -22,6 +25,11 @@ ScreenManager:
             on_release:
                 app.root.current="stats"
                 root.manager.transition.direction = "right"
+        Button:
+            text: "Добавить регулярную операцию"
+            on_release:
+                app.root.current="add_reg_op"
+                root.manager.transition.direction = "up"
 
 <RegularOperationsScreen>:
     name: "reg_ops"
@@ -31,11 +39,63 @@ ScreenManager:
             app.root.current="main"
             root.manager.transition.direction = "right"
 
+<AddRegularOperationScreen>:
+    name: "add_reg_op"
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Добавление регулярной операции"
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Введите название"
+            TextInput:
+                id: reg_op_name
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Выбор типа регулярной операции"
+            DropDown:
+                id: reg_op_type
+                on_touch_down: root.get_reg_op_types()
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Сумма регулярной операции"
+            TextInput:
+                id: reg_op_sum
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Выбор периодичности"
+            DropDown:
+                id: reg_op_period
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Настройка уведомления"
+            DropDown:
+                id: reg_op_notification
+        Button:
+            text: "Вернуться"
+            on_release:
+                app.root.current="main"
+                root.manager.transition.direction = "down"
+
+
 <RegularOperationTypesScreen>:
     name: "reg_op_types"
 
 <StatisticsScreen>:
     name: "stats"
+    Button:
+        text: "Вернуться"
+        on_release:
+            app.root.current="main"
+            root.manager.transition.direction = "left"
+
+<SecretMenuScreen>:
+    name: "secret"
     Button:
         text: "Вернуться"
         on_release:
