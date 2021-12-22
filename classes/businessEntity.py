@@ -24,7 +24,7 @@ class BusinessEntity:
         self.is_reg_op_types_displayed = False
         self.is_period_list_displayed = False
         # getting operation types
-        self.regularOperationTypes =  self.DB.get_operation_types()
+        self.regularOperationTypes = self.DB.get_operation_types()
         # getting active regular operations
         self.regularOperations = self.DB.get_active_regular_operations()
         # getting current balances on init

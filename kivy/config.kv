@@ -55,9 +55,10 @@ ScreenManager:
             cols: 2
             Label:
                 text: "Выбор типа регулярной операции"
-            DropDown:
+            Spinner:
                 id: reg_op_type
-                on_touch_down: root.get_reg_op_types()
+                text: "Выберите тип регулярной операции"
+                values: root.reg_op_types
         GridLayout:
             cols: 2
             Label:
@@ -68,19 +69,29 @@ ScreenManager:
             cols: 2
             Label:
                 text: "Выбор периодичности"
-            DropDown:
+            Spinner:
                 id: reg_op_period
+                text: "Выберите периодичность регулярной операции"
+                values: ["Каждый день", "Каждую неделю", "Каждый месяц", "Каждый год"]
         GridLayout:
             cols: 2
             Label:
                 text: "Настройка уведомления"
-            DropDown:
+            Spinner:
                 id: reg_op_notification
-        Button:
-            text: "Вернуться"
-            on_release:
-                app.root.current="main"
-                root.manager.transition.direction = "down"
+                text: "Выберите периодичность уведомлений"
+                values: ["За месяц", "За неделю", "За день", "В тот же день", "Через день"]
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Вернуться"
+                on_release:
+                    app.root.current="main"
+                    root.manager.transition.direction = "down"
+            Button:
+                text: "Добавить"
+                on_release:
+                    root.add_reg_op(reg_op_name.text, reg_op_type.text, reg_op_sum.text, reg_op_period.text, reg_op_notification.text)
 
 
 <RegularOperationTypesScreen>:
