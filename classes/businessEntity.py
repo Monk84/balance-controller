@@ -11,6 +11,7 @@ from datetime import date, timedelta, datetime
 from classes.notification import Notification
 import re
 # DB = DataManager()
+import json 
 
 class BusinessEntity:
     # regularOperations = []
@@ -163,7 +164,11 @@ class BusinessEntity:
     def get_operation_types(self):
         self.is_reg_op_types_displayed = True
         items = self.regularOperationTypes
-        return [x.__repr__() for x in items if x.get_op_type() == const.REG_OP_STATUS_ACTIVE]
+        res = [x.__repr__() for x in items if x.get_op_type() == const.REG_OP_STATUS_ACTIVE]
+        for i in res:
+            tmp = json.dumps(i, ensure_ascii=False)
+            i = tmp
+        return res
 
     def set_operation_type(self, operation_id, type):
         if not self.is_reg_op_types_displayed:

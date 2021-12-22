@@ -7,8 +7,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.dropdown import DropDown
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+import sys
+sys.path.append("..")
 from classes.businessEntity import BusinessEntity
-
 
 API = BusinessEntity()
 
