@@ -251,7 +251,7 @@ class TestBusinessEntity(unittest.TestCase):
     
     def test_right_get_notification_settings(self):
         application = BusinessEntity()
-        self.assertEqual(application.get_notifications_settings(1), {'data': {'period': timedelta(days=12), 'notification_period': timedelta(days=23), 'start_date': date(2020, 1, 1)}})
+        self.assertEqual(application.get_notifications_settings(1), {'data': {'period': timedelta(days=1), 'notification_period': timedelta(days=7), 'start_date': date(2020, 1, 1)}})
     
     def test_wrong_update_notification_settings(self):
         application = BusinessEntity()
