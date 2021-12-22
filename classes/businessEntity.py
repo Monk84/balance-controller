@@ -249,7 +249,7 @@ class BusinessEntity:
         
         operation = self.regularOperations[index]["operation"].get()
 
-        self.deposit_balance.set_balance(self.deposit_balance.get_balance() - operation["payment_amount"])
+        self.deposit_balance.set_balance(self.deposit_balance.get_balance() + operation["payment_amount"])
         self.DB.change_deposit_balance(self.deposit_balance.get_balance())
         return {"message": "Successfully updated deposit balance"}
     
