@@ -99,11 +99,60 @@ ScreenManager:
 
 <StatisticsScreen>:
     name: "stats"
-    Button:
-        text: "Вернуться"
-        on_release:
-            app.root.current="main"
-            root.manager.transition.direction = "left"
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Статистика"
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Введите дату начала периода аналитики"
+            TextInput:
+                id: start_date
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Введите дату окончания периода аналитики"
+            TextInput:
+                id: end_date
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Выбор типа регулярной операции"
+            Spinner:
+                id: reg_op_type_stat
+                text: "Выберите тип регулярной операции"
+                values: root.reg_op_types_statistics   
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Сумма прихода за период"
+            TextInput:
+                id: root.total_income
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Сумма платежей за период"
+            TextInput:
+                id: root.total_spend
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Итог"
+            TextInput:
+                id: root.total
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Посчитать"
+                on_release:
+                    root.get_statistics(reg_op_type_stat.text, start_date.text, end_date.text)
+
+            Button:
+                text: "Вернуться"
+                on_release:
+                    app.root.current="main"
+                    root.manager.transition.direction = "left"
 
 <SecretMenuScreen>:
     name: "secret"

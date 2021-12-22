@@ -27,7 +27,36 @@ class RegularOperationTypesScreen(Screen):
 
 
 class StatisticsScreen(Screen):
-    pass
+    API.get_operation_types()
+    reg_op_types_statistics = [x.name for x in API.regularOperationTypes]
+    total_income = 0
+    total_spend = 0 
+    total = 0
+    def get_statistics(self, reg_op_type_stat, start_date, end_date):
+        final_op_stat = None
+        final_start_date = None
+        final_end_date = None 
+        
+        final_start_date = start_date if isinstance(start_date, str) else None
+        final_end_date = start_date if isinstance(end_date, str) else None
+        for op_type in API.regularOperationTypes:
+            if op_type.name == reg_op_type_stat:
+                final_op_stat = op_type
+                break
+        if final_start_date and final_end_date and final_op_stat:
+            try:
+                res = API.form_statistics_by_period(reg_op_type_stat, start_date, end_date)
+                print(res)
+            except:
+                print("Wrong")
+            self.total_income = res["total_income"]
+            self.total_spend = res["total_spend"]
+            self.total = self.total_income - self.total_spend
+            print("self.total_income ", self.total_income)
+            print("self.total_income ", self.total_income)
+            print("self.total_income ", self.total_income)
+
+
 
 
 class SecretMenuScreen(Screen):
