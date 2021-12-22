@@ -19,7 +19,7 @@ class StartScreen(Screen):
 
     def on_enter(self):
         Clock.schedule_once(self.initting)
-        self.ids["reg_op_name"].text = self.reg_op.name
+        #self.ids["reg_op_name"].text = self.reg_op.name
 
     def initting(self, dt):
         self.get_balance()
