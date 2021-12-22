@@ -7,6 +7,7 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 
 from classes.businessEntity import BusinessEntity
+from classes.const import notification_periods, notification_periods_inverse, periods, periods_inverse
 
 API = BusinessEntity()
 
@@ -39,7 +40,6 @@ class RegularOperationsScreen(Screen):
         reg_op_change = self.manager.get_screen("reg_op_change")
         reg_op_change.reg_op_id = self.index_to_id[reg_op_index]
         reg_op_change.reg_op = self.reg_ops[int(reg_op_index)-1]
-        print(reg_op_change.reg_op)
     pass
 
 
@@ -56,8 +56,34 @@ class ChangeRegularOperationScreen(Screen):
         self.ids["reg_op_name"].text = self.reg_op.name
         self.ids["reg_op_type"].text = self.reg_op.reg_op_type.name
         self.ids["reg_op_sum"].text = str(self.reg_op.payment_amount)
-        self.ids["reg_op_period"].text = str(self.reg_op.period.days)
+        self.ids["reg_op_period"].text = periods_inverse[self.reg_op.period.days]
+        self.ids["reg_op_notification"].text = notification_periods_inverse[self.reg_op.notification_period.days]
         return
+
+    def update_reg_op(self, reg_op_name, reg_op_type, reg_op_sum, reg_op_period, reg_op_notification):
+        try:
+            reg_op_sum = int(reg_op_sum)
+            reg_op_period = periods[reg_op_period]
+            reg_op_notification = notification_periods[reg_op_notification]
+            for op_type in API.regularOperationTypes:
+                if op_type.name == reg_op_type:
+                    reg_op_type = op_type
+                    break
+        except:
+            pass
+        try:
+            if reg_op_name != '' and reg_op_type != "Выберите тип регулярной операции" and isinstance(reg_op_sum, int) \
+                    and isinstance(reg_op_period, int) and isinstance(reg_op_notification, int):
+                API.change_regular_operation(self.reg_op_id,
+                                             reg_op_name,
+                                             reg_op_type,
+                                             reg_op_sum,
+                                             timedelta(reg_op_period),
+                                             timedelta(reg_op_notification))
+                self.manager.current = "main"
+
+        except:
+            pass
     pass
 
 
@@ -113,19 +139,6 @@ class AddRegularOperationScreen(Screen):
 
     # get notification periods
     def add_reg_op(self, reg_op_name, reg_op_type, reg_op_sum, reg_op_period, reg_op_notification):
-        periods = {
-            "Каждый день": 1,
-            "Каждую неделю": 7,
-            "Каждый месяц": 30,
-            "Каждый год": 365
-        }
-        notification_periods = {
-            "За месяц": 30,
-            "За неделю": 7,
-            "За день": 1,
-            "В тот же день": 0,
-            "Через день": -1
-        }
         try:
             reg_op_sum = int(reg_op_sum)
             reg_op_period = periods[reg_op_period]

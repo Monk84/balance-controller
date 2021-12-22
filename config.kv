@@ -98,7 +98,9 @@ ScreenManager:
                     app.root.current="main"
                     root.manager.transition.direction = "down"
             Button:
-                text: "Добавить"
+                text: "Сохранить изменения"
+                on_release:
+                    root.update_reg_op(reg_op_name.text, reg_op_type.text, reg_op_sum.text, reg_op_period.text, reg_op_notification.text)
 
 
 <AddRegularOperationScreen>:
