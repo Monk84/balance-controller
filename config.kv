@@ -6,7 +6,7 @@ ScreenManager:
     StatisticsScreen:
     AddRegularOperationScreen:
     SecretMenuScreen:
-
+    ChangeRegularOperationScreen:
 
 <StartScreen>:
     name: "main"
@@ -75,11 +75,79 @@ ScreenManager:
 
 <RegularOperationsScreen>:
     name: "reg_ops"
-    Button:
-        text: "Вернуться"
-        on_release:
-            app.root.current="main"
-            root.manager.transition.direction = "right"
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Добавление регулярной операции"
+        GridLayout:
+            cols: 1
+            GridLayout:
+                cols: 1
+                id: reg_ops_list
+        Button:
+            text: "Вернуться"
+            on_release:
+                app.root.current="main"
+                root.manager.transition.direction = "right"
+
+<ChangeRegularOperationScreen>:
+    name: "reg_op_change"
+    GridLayout:
+        cols: 1
+        Label:
+            text: "Редактирование регулярной операции"
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Введите название"
+            TextInput:
+                id: reg_op_name
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Выбор типа регулярной операции"
+            Spinner:
+                id: reg_op_type
+                text: "Выберите тип регулярной операции"
+                values: root.reg_op_types
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Сумма регулярной операции"
+            TextInput:
+                id: reg_op_sum
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Выбор периодичности"
+            Spinner:
+                id: reg_op_period
+                text: "Выберите периодичность регулярной операции"
+                values: ["Каждый день", "Каждую неделю", "Каждый месяц", "Каждый год"]
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Настройка уведомления"
+            Spinner:
+                id: reg_op_notification
+                text: "Выберите периодичность уведомлений"
+                values: ["За месяц", "За неделю", "За день", "В тот же день", "Через день"]
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Удалить операцию"
+                on_release:
+                    root.remove_reg_op()
+            Button:
+                text: "Сохранить изменения"
+                on_release:
+                    root.update_reg_op(reg_op_name.text, reg_op_type.text, reg_op_sum.text, reg_op_period.text, reg_op_notification.text)
+        Button:
+            text: "Вернуться"
+            on_release:
+                app.root.current="main"
+                root.manager.transition.direction = "down"
+
 
 <AddRegularOperationScreen>:
     name: "add_reg_op"
@@ -170,19 +238,19 @@ ScreenManager:
             Label:
                 text: "Сумма прихода за период"
             TextInput:
-                id: root.total_income
+                id: total_income
         GridLayout:
             cols: 2
             Label:
                 text: "Сумма платежей за период"
             TextInput:
-                id: root.total_spend
+                id: total_spend
         GridLayout:
             cols: 2
             Label:
                 text: "Итог"
             TextInput:
-                id: root.total
+                id: total
         GridLayout:
             cols: 2
             Button:
