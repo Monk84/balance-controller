@@ -1,5 +1,6 @@
 ScreenManager:
     StartScreen:
+    BalanceScreen:
     RegularOperationsScreen:
     RegularOperationTypesScreen:
     StatisticsScreen:
@@ -12,24 +13,65 @@ ScreenManager:
     GridLayout:
         cols: 1
         GridLayout:
-            cols: 1
+            cols: 2
             Label:
                 text: "Контроллер баланса"
-        Button:
-            text: "К регулярным операциям"
-            on_release:
-                app.root.current="reg_ops"
-                root.manager.transition.direction = "left"
-        Button:
-            text: "К статистике"
-            on_release:
-                app.root.current="stats"
-                root.manager.transition.direction = "right"
-        Button:
-            text: "Добавить регулярную операцию"
-            on_release:
-                app.root.current="add_reg_op"
-                root.manager.transition.direction = "up"
+                font_size: '30sp'
+
+            Label:
+                text: "Текущий баланс: " + root.get_balance()
+                font_size: '30sp'
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Управление балансом"
+                on_release:
+                    app.root.current="balance"
+            Button:
+                text: "К регулярным операциям"
+                on_release:
+                    app.root.current="reg_ops"
+                    root.manager.transition.direction = "left"
+            Button:
+                text: "К статистике"
+                on_release:
+                    app.root.current="stats"
+                    root.manager.transition.direction = "right"
+            Button:
+                text: "Добавить регулярную операцию"
+                on_release:
+                    app.root.current="add_reg_op"
+                    root.manager.transition.direction = "up"
+
+<BalanceScreen>:
+    name: "balance"
+    GridLayout:
+        cols: 1
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Управление балансом"
+                font_size: '30sp'
+            Label:
+                text: "Текущий баланс: %s" % root.balstr
+                font_size: '30sp'
+        GridLayout:
+            cols: 1
+            Label:
+                text: "Введите название"
+            TextInput:
+                id: new_balance
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Сохранить"
+                on_release:
+                    root.change_balance(new_balance.text)
+                    app.root.current="main"
+            Button:
+                text: "Отмена"
+                on_release:
+                    app.root.current="main"
 
 <RegularOperationsScreen>:
     name: "reg_ops"
