@@ -1,3 +1,4 @@
+from os import stat_result
 import classes.const as const
 from classes.depositBalance import DepositBalance
 from classes.notification import Notification
@@ -5,13 +6,13 @@ from classes.paymentsBalance import PaymentsBalance
 from classes.regularOperation import RegularOperation
 from classes.regularOperationType import RegularOperationType
 from classes.dbGatewayInterface import GatewayInterface
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 class BasicGateway(GatewayInterface):
     def __init__(self):
         self.first_regular_operation = {"id": 1, "name": "Кредит", "reg_op_type": "Кредит", "payment_amount": -123, "period": 1, "notification_period": 7, "start_date": "2020-01-01", "active": True}
         self.second_regular_operation = {"id": 2, "name": "Аренда", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 7, "notification_period": 1, "start_date": "2021-01-01", "active": True}
-        self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 7, "notification_period": 0, "start_date": "2021-01-01", "active": False}
+        self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 7, "notification_period": 0, "start_date": "2020-01-01", "active": False}
         self.regular_operations = [ self.first_regular_operation, self.second_regular_operation, self.third_reqular_operation]
         self.deposit_balance = 0
         self.payments_balance = {"days": 30, "payment_amount": 15, "current_payment_limit": 150}
@@ -127,10 +128,13 @@ class BasicGateway(GatewayInterface):
         Returns prices.
         :returns result: array with format [{"price": int}, {"price": int}, ...]
         """
-        #TODO добавить проверку, что попали в end date,  И Вообще как это учитывать то ? тупо плюсовать период?
         result = []
         for op in self.regular_operations:
-            result.append({"price": op["payment_amount"]})
+            if tag == op["reg_op_type"]:
+                start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+                i =  (end_date - start_date).days // op["period"]
+                result.append({"price": op["payment_amount"]*i})
         return result
     
     def add_regular_operation_type(self, new_type: RegularOperationType) -> None:
