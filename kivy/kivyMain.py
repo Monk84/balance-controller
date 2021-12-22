@@ -3,12 +3,9 @@ from datetime import date, timedelta
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.dropdown import DropDown
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from classes.businessEntity import BusinessEntity
-
 
 API = BusinessEntity()
 
@@ -18,6 +15,7 @@ class StartScreen(Screen):
 
 
 class RegularOperationsScreen(Screen):
+
     pass
 
 
@@ -33,14 +31,14 @@ class SecretMenuScreen(Screen):
     pass
 
 
-class CustomDropDown(DropDown):
-    pass
-
-
 class AddRegularOperationScreen(Screen):
-    # getting reg op types
-    API.get_operation_types()
-    reg_op_types = [x.name for x in API.regularOperationTypes]
+    reg_op_types = []
+
+    def on_enter(self):
+        # getting reg op types
+        API.get_operation_types()
+        self.reg_op_types = [x.name for x in API.regularOperationTypes]
+        self.ids["reg_op_type"].values = self.reg_op_types
 
     # get notification periods
     def add_reg_op(self, reg_op_name, reg_op_type, reg_op_sum, reg_op_period, reg_op_notification):
