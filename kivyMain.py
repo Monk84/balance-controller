@@ -84,6 +84,13 @@ class ChangeRegularOperationScreen(Screen):
 
         except:
             pass
+
+    def remove_reg_op(self):
+        try:
+            API.remove_regular_operation(self.reg_op_id)
+            self.manager.current = "main"
+        except:
+            pass
     pass
 
 

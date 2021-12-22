@@ -93,14 +93,18 @@ ScreenManager:
         GridLayout:
             cols: 2
             Button:
-                text: "Вернуться"
+                text: "Удалить операцию"
                 on_release:
-                    app.root.current="main"
-                    root.manager.transition.direction = "down"
+                    root.remove_reg_op()
             Button:
                 text: "Сохранить изменения"
                 on_release:
                     root.update_reg_op(reg_op_name.text, reg_op_type.text, reg_op_sum.text, reg_op_period.text, reg_op_notification.text)
+        Button:
+            text: "Вернуться"
+            on_release:
+                app.root.current="main"
+                root.manager.transition.direction = "down"
 
 
 <AddRegularOperationScreen>:
