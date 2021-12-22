@@ -29,7 +29,7 @@ class BusinessEntity:
         self.regularOperations = self.DB.get_active_regular_operations()
         # getting current balances on init
         self.deposit_balance = self.DB.get_deposit_balance()
-        self.payments_balance,cur_paym_balance = self.DB.get_payments_balance()
+        self.payments_balance, cur_paym_balance = self.DB.get_payments_balance()
         self.payments_balance.apply_reg_operations([RegularOperation('', RegularOperationType('', True),
                                                                      cur_paym_balance,
                                                                      timedelta(days=1),

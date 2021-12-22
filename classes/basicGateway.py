@@ -9,9 +9,9 @@ from datetime import date, timedelta
 
 class BasicGateway(GatewayInterface):
     def __init__(self):
-        self.first_regular_operation = {"id": 1, "name": "Кредит", "reg_op_type": "Кредит", "payment_amount": -123, "period": 12, "notification_period": 23, "start_date": "2020-01-01", "active": True}
-        self.second_regular_operation = {"id": 2, "name": "Аренда", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 13, "notification_period": 12, "start_date": "2021-01-01", "active": True}
-        self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 8, "notification_period": 12, "start_date": "2021-01-01", "active": False}
+        self.first_regular_operation = {"id": 1, "name": "Кредит", "reg_op_type": "Кредит", "payment_amount": -123, "period": 1, "notification_period": 7, "start_date": "2020-01-01", "active": True}
+        self.second_regular_operation = {"id": 2, "name": "Аренда", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 7, "notification_period": 1, "start_date": "2021-01-01", "active": True}
+        self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 7, "notification_period": 0, "start_date": "2021-01-01", "active": False}
         self.regular_operations = [ self.first_regular_operation, self.second_regular_operation, self.third_reqular_operation]
         self.deposit_balance = 0
         self.payments_balance = {"days": 30, "payment_amount": 15, "current_payment_limit": 150}
