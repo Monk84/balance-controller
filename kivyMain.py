@@ -16,7 +16,48 @@ class StartScreen(Screen):
 
 
 class RegularOperationsScreen(Screen):
+    reg_ops = []
+    index_to_id = {}
 
+    def on_enter(self):
+        self.reg_ops = []
+        self.index_to_id = {}
+        self.ids["reg_ops_list"].clear_widgets()
+        active_reg_ops = API.show_operations()
+        for i in range(len(active_reg_ops)):
+            op = active_reg_ops[i]
+            self.reg_ops.append(op[1]['operation'])
+            self.index_to_id[str(i+1)] = op[1]['id']
+            btn = Button(text=str(i+1)+"."+op[1]['operation'].name)
+            btn.bind(on_press=self.move_to_reg_op_type)
+            self.ids["reg_ops_list"].add_widget(btn)
+        return
+
+    def move_to_reg_op_type(self, instance):
+        self.manager.current = "reg_op_change"
+        reg_op_index = instance.text[:instance.text.find(".")]
+        reg_op_change = self.manager.get_screen("reg_op_change")
+        reg_op_change.reg_op_id = self.index_to_id[reg_op_index]
+        reg_op_change.reg_op = self.reg_ops[int(reg_op_index)-1]
+        print(reg_op_change.reg_op)
+    pass
+
+
+class ChangeRegularOperationScreen(Screen):
+    reg_op_id = 0
+    reg_op = None
+    reg_op_types = []
+
+    def on_enter(self):
+        API.get_operation_types()
+        self.reg_op_types = [x.name for x in API.regularOperationTypes]
+        self.ids["reg_op_type"].values = self.reg_op_types
+        # set reg_op data
+        self.ids["reg_op_name"].text = self.reg_op.name
+        self.ids["reg_op_type"].text = self.reg_op.reg_op_type.name
+        self.ids["reg_op_sum"].text = str(self.reg_op.payment_amount)
+        self.ids["reg_op_period"].text = str(self.reg_op.period.days)
+        return
     pass
 
 
