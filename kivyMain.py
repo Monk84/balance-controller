@@ -17,12 +17,14 @@ from classes.const import notification_periods, notification_periods_inverse, pe
 
 API = BusinessEntity()
 
+
 class StartScreen(Screen):
     balance = 0
+    payments = 0
 
     def on_enter(self):
         Clock.schedule_once(self.initting)
-        #self.ids["reg_op_name"].text = self.reg_op.name
+        #  self.ids["reg_op_name"].text = self.reg_op.name
 
     def initting(self, dt):
         self.get_balance()
@@ -32,7 +34,9 @@ class StartScreen(Screen):
         print('startscreen: balance %d' % self.balance)
         return str(self.balance)
 
-
+    def get_payments(self):
+        self.payments = API.get_payments()
+        return str(self.payments)
 
 
 class BalanceScreen(Screen):
@@ -55,6 +59,7 @@ class BalanceScreen(Screen):
         return str(self.balance)
 
     balstr = AliasProperty(get_balance, None, bind=['balance'])
+
 
 class RegularOperationsScreen(Screen):
     reg_ops = []

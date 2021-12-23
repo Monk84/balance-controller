@@ -27,6 +27,9 @@ class PaymentsBalance:
     def get_limit(self):
         return self.limit
 
+    def get_balance(self):
+        return self.current_value
+
     def apply_reg_operations(self, reg_ops):  # 8 tests required
         if not isinstance(reg_ops, list):
             raise TypeError("PaymentBalance: expected list(RegularOperation) for reg_ops")

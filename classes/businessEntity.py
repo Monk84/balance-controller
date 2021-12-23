@@ -257,6 +257,9 @@ class BusinessEntity:
         self.is_balance_displayed = True
         return self.deposit_balance.get_balance()
 
+    def get_payments(self):
+        return self.payments_balance.get_balance()
+
     def show_operations(self):
         self.is_reg_displayed = True
         ops_to_sort = []

@@ -13,26 +13,42 @@ ScreenManager:
     MDScreen:
         MDGridLayout:
             cols: 1
-            spacing: "24dp"
-            padding: "24dp"
             pos_hint: {"center_x": 0.5}
             adaptive_width: True
             MDGridLayout:
                 cols: 1
                 rows: 2
-                pos_hint: {"center_x": 0.5}
                 MDLabel:
                     text: "Контроллер баланса"
                     halign: 'center'
-                    pos_hint: {'center_y':0.9}
                     font_style: 'H4'
                     font_size: '30sp'
-                MDLabel:
-                    text: "Текущий баланс: " + root.get_balance()
-                    halign: 'center'
-                    pos_hint: {'center_y':0.9}
-                    font_style: 'H4'
-                    font_size: '30sp'   
+                MDGridLayout:
+                    cols: 2
+                    MDGridLayout:
+                        rows: 2
+                        MDLabel:
+                            text: "Текущий баланс\n"
+                            halign: 'center'
+                            font_style: 'H4'
+                            font_size: '25sp'
+                        MDLabel:
+                            text: root.get_balance()
+                            halign: 'center'
+                            font_style: 'H4'
+                            font_size: '120sp'
+                    MDGridLayout:
+                        rows: 2
+                        MDLabel:
+                            text: "Баланс платежей\n"
+                            halign: 'center'
+                            font_style: 'H4'
+                            font_size: '25sp'
+                        MDLabel:
+                            text: root.get_payments()
+                            halign: 'center'
+                            font_style: 'H4'
+                            font_size: '120sp'
             MDGridLayout:
                 cols: 2
                 rows: 4
@@ -46,7 +62,7 @@ ScreenManager:
                     on_release:
                         app.root.current="balance"
                 MDFillRoundFlatIconButton:
-                    text: "К регулярным операциям"
+                    text: "Список операций"
                     halign: 'center'
                     pos_hint: {'center_y':0.4}
                     spacing: 100
@@ -55,7 +71,7 @@ ScreenManager:
                         app.root.current="reg_ops"
                         root.manager.transition.direction = "left"
                 MDFillRoundFlatIconButton:
-                    text: "К статистике"
+                    text: "Статистика"
                     pos_hint:{'center_y':0.9}
                     on_release:
                         app.root.current="stats"
@@ -342,6 +358,7 @@ ScreenManager:
             on_release:
                 app.root.current="main"
                 root.manager.transition.direction = "down"
+
 <StatisticsScreen>:
     name: "stats"
     GridLayout:
