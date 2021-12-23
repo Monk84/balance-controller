@@ -10,10 +10,20 @@ ScreenManager:
 
 <StartScreen>:
     name: "main"
-    GridLayout:
+    MDGridLayout:
         cols: 1
-        GridLayout:
-            cols: 1
+        rows: 5
+        spacing: "24dp"
+        padding: "24dp"
+        pos_hint: {"center_x": 0.5}
+        adaptive_size: True
+        MDGridLayout:
+            cols: 2
+            rows: 4
+            adaptive_size: True
+            spacing: "50dp"
+            padding: "50dp"
+            pos_hint: {"center_x": 0.5}
             MDLabel:
                 text: "Контроллер баланса"
                 halign: 'center'
