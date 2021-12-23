@@ -177,7 +177,7 @@ class StatisticsScreen(Screen):
     total_income = 0
     total_spend = 0 
     total = 0
- 
+
     def on_enter(self):
         self.ids["total_income"].text = str(self.total_income)
         self.ids["total_spend"].text = str(self.total_spend)
@@ -205,6 +205,9 @@ class StatisticsScreen(Screen):
                 self.total_income = res["total_income"]
                 self.total_spend = res["total_spend"]
                 self.total = self.total_income - self.total_spend
+                self.ids["total_income"].text = str(self.total_income)
+                self.ids["total_spend"].text = str(self.total_spend)
+                self.ids["total"].text = str(self.total)
             except:
                 print("Wrong data")
 
