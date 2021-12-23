@@ -10,58 +10,63 @@ ScreenManager:
 
 <StartScreen>:
     name: "main"
-    MDGridLayout:
-        cols: 1
-        rows: 5
-        spacing: "24dp"
-        padding: "24dp"
-        pos_hint: {"center_x": 0.5}
-        adaptive_size: True
+    MDScreen:
         MDGridLayout:
-            cols: 2
-            rows: 4
-            adaptive_size: True
-            spacing: "50dp"
-            padding: "50dp"
+            cols: 1
+            spacing: "24dp"
+            padding: "24dp"
             pos_hint: {"center_x": 0.5}
-            MDLabel:
-                text: "Контроллер баланса"
-                halign: 'center'
-                pos_hint: {'center_y':0.9}
-                font_style: 'H4'
-                font_size: '30sp'
-            MDLabel:
-                text: "Текущий баланс: " + root.get_balance()
-                halign: 'center'
-                pos_hint: {'center_y':0.9}
-                font_style: 'H4'
-                font_size: '30sp'            
-            MDFillRoundFlatIconButton:
-                text: "Управление балансом"
-                on_release:
-                    app.root.current="balance"
-            MDFillRoundFlatIconButton:
-                text: "К регулярным операциям"
-                halign: 'center'
-                pos_hint: {'center_y':0.4}
-                spacing: 100
-                padding: 50
-                on_release:
-                    app.root.current="reg_ops"
-                    root.manager.transition.direction = "left"
-            MDFillRoundFlatIconButton:
-                text: "К статистике"
-                pos_hint:{'center_y':0.9}
-                on_release:
-                    app.root.current="stats"
-                    root.manager.transition.direction = "right"
-                    
-            MDFillRoundFlatIconButton:
+            adaptive_width: True
+            MDGridLayout:
+                cols: 1
+                rows: 2
+                pos_hint: {"center_x": 0.5}
+                MDLabel:
+                    text: "Контроллер баланса"
+                    halign: 'center'
+                    pos_hint: {'center_y':0.9}
+                    font_style: 'H4'
+                    font_size: '30sp'
+                MDLabel:
+                    text: "Текущий баланс: " + root.get_balance()
+                    halign: 'center'
+                    pos_hint: {'center_y':0.9}
+                    font_style: 'H4'
+                    font_size: '30sp'   
+            MDGridLayout:
                 cols: 2
-                text: "Добавить регулярную операцию"
-                on_release:
-                    app.root.current="add_reg_op"
-                    root.manager.transition.direction = "up"
+                rows: 4
+                adaptive_width: True
+                spacing: "50dp"
+                padding: "50dp"
+                pos_hint: {"center_x": 0.5}
+        
+                MDFillRoundFlatIconButton:
+                    text: "Управление балансом"
+                    on_release:
+                        app.root.current="balance"
+                MDFillRoundFlatIconButton:
+                    text: "К регулярным операциям"
+                    halign: 'center'
+                    pos_hint: {'center_y':0.4}
+                    spacing: 100
+                    padding: 50
+                    on_release:
+                        app.root.current="reg_ops"
+                        root.manager.transition.direction = "left"
+                MDFillRoundFlatIconButton:
+                    text: "К статистике"
+                    pos_hint:{'center_y':0.9}
+                    on_release:
+                        app.root.current="stats"
+                        root.manager.transition.direction = "right"
+                        
+                MDFillRoundFlatIconButton:
+                    cols: 2
+                    text: "Добавить регулярную операцию"
+                    on_release:
+                        app.root.current="add_reg_op"
+                        root.manager.transition.direction = "up"
 
 <BalanceScreen>:
     name: "balance"

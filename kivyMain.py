@@ -8,7 +8,7 @@ from kivymd.app import MDApp
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty, AliasProperty
-
+from kivy.utils import get_color_from_hex 
 from classes.businessEntity import BusinessEntity
 from classes.const import notification_periods, notification_periods_inverse, periods, periods_inverse
 
@@ -222,6 +222,7 @@ class MainApp(MDApp):
         self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "Indigo"
         self.theme_cls.primary_hue = "500"
+        self.theme_cls.material_style = "M3"
         super().__init__(**kwargs)
 
     def build(self):
