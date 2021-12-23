@@ -146,6 +146,7 @@ class StatisticsScreen(Screen):
         self.ids["total_income"].text = str(self.total_income)
         self.ids["total_spend"].text = str(self.total_spend)
         self.ids["total"].text = str(self.total)
+        self.reg_op_types_statistics = [x.name for x in API.regularOperationTypes]
 
     def get_statistics(self, reg_op_type_stat, start_date, end_date):
         final_op_stat = None
