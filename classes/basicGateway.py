@@ -1,3 +1,4 @@
+from json.decoder import JSONDecodeError
 from os import stat_result
 import classes.const as const
 from classes.depositBalance import DepositBalance
@@ -7,6 +8,7 @@ from classes.regularOperation import RegularOperation
 from classes.regularOperationType import RegularOperationType
 from classes.dbGatewayInterface import GatewayInterface
 from datetime import date, timedelta, datetime
+import  json 
 
 class BasicGateway(GatewayInterface):
     def __init__(self):
@@ -14,6 +16,7 @@ class BasicGateway(GatewayInterface):
         self.second_regular_operation = {"id": 2, "name": "Аренда", "reg_op_type": "Аренда", "payment_amount": 2000, "period": 7, "notification_period": 1, "start_date": "2021-01-01", "active": True}
         self.third_reqular_operation = {"id": 3, "name": "Тестовый", "reg_op_type": "Тестовый", "payment_amount": 55, "period": 7, "notification_period": 0, "start_date": "2020-01-01", "active": False}
         self.regular_operations = [ self.first_regular_operation, self.second_regular_operation, self.third_reqular_operation]
+        self.regular_operations_types = [{"id": 1, "type" :{"name": "Аренда", "op_type": 1, "status": True }}, {"id": 2, "type" :{"name": "Кредит", "op_type": 1, "status": True }},{"id": 3, "type" :{"name": "Тестовый", "op_type": 1, "status": True }}]
         self.deposit_balance = 0
         self.payments_balance = {"days": 30, "payment_amount": 15, "current_payment_limit": 150}
 
@@ -83,11 +86,19 @@ class BasicGateway(GatewayInterface):
         Returns new id from DB.
         :returns id: int
         """
-        operation = new_reg.get()
-        operation["id"] = len(self.regular_operations) + 1
-        operation["active"] = True
-        self.regular_operations.append(operation)
-        return operation["id"]
+        tmp = new_reg.get()
+        operation = tmp
+        exist = False
+        for op in self.regular_operations_types:
+            if op["type"]["name"] == tmp["reg_op_type"].name:
+                exist = True
+        if exist:
+            operation["id"] = len(self.regular_operations) + 1
+            operation["active"] = True
+            operation["reg_op_type"] = tmp["reg_op_type"].name
+            self.regular_operations.append(operation)
+            return operation["id"]
+        return None
     
     def change_regular_operation(self, reg: dict) -> None:
         """
@@ -148,9 +159,16 @@ class BasicGateway(GatewayInterface):
                 op["active"] = True
     
     def add_operation_type(self, operation_type: RegularOperationType) -> None:
-        #TODO тип операции может ли существовать без операции? надо продумать как это хранить и как инициировать тут. Пока решение временное
-        # судя из строки 141 businessEntity нельзя...
-        self.regular_operations.append({"id": "", "reg_op_type": operation_type.get_name()})
+        exist = False
+        for op in self.regular_operations_types:
+            if operation_type.name == op["type"]["name"]:
+                exist = True
+                break
+        if not exist:
+            newstr = operation_type.__repr__().replace("'", '"').replace("True", "true").replace("False", "false")
+            tmp = json.loads(newstr)
+            self.regular_operations_types.append({"id": len(self.regular_operations_types)+1, "type": tmp})
+
     
     def deactivate_operation_type(self, operation_type: RegularOperationType) -> None:
         """
