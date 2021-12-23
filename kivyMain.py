@@ -1,7 +1,10 @@
 import datetime
+import json
 from datetime import date, timedelta
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
+from kivy.uix.gridlayout import GridLayout
 from kivy.lang import Builder
 from kivymd.theming import ThemeManager
 from kivymd.app import MDApp
@@ -87,7 +90,10 @@ class ChangeRegularOperationScreen(Screen):
 
     def on_enter(self):
         API.get_operation_types()
-        self.reg_op_types = [x.name for x in API.regularOperationTypes]
+        self.reg_op_types = []
+        for tp in API.regularOperationTypes:
+            if tp.status:
+                self.reg_op_types.append(tp.name)
         self.ids["reg_op_type"].values = self.reg_op_types
         # set reg_op data
         self.ids["reg_op_name"].text = self.reg_op.name
@@ -132,6 +138,29 @@ class ChangeRegularOperationScreen(Screen):
 
 
 class RegularOperationTypesScreen(Screen):
+    reg_op_types = []
+
+    def on_enter(self):
+        API.get_operation_types()
+        self.reg_op_types = []
+        for tp in API.regularOperationTypes:
+            if tp.status:
+                self.reg_op_types.append(tp.name)
+        self.ids["type_to_delete"].values = self.reg_op_types
+    def add(self, new_type):
+        try:
+            API.add_regular_operation_type(new_type)
+            self.manager.current = "main"
+        except:
+            pass
+        pass
+    def remove(self,type):
+        try:
+            API.remove_regular_operation_type(type)
+            self.manager.current = "main"
+        except:
+            pass
+        pass
     pass
 
 
@@ -178,7 +207,10 @@ class AddRegularOperationScreen(Screen):
     def on_enter(self):
         # getting reg op types
         API.get_operation_types()
-        self.reg_op_types = [x.name for x in API.regularOperationTypes]
+        self.reg_op_types = []
+        for tp in API.regularOperationTypes:
+            if tp.status:
+                self.reg_op_types.append(tp.name)
         self.ids["reg_op_type"].values = self.reg_op_types
 
     # get notification periods
@@ -237,6 +269,7 @@ class MainApp(MDApp):
         self.sm.add_widget(StatisticsScreen(name="stats"))
         self.sm.add_widget(SecretMenuScreen(name="secret"))
         self.sm.add_widget(BalanceScreen(name="balance"))
+        self.sm.add_widget(RegularOperationTypesScreen(name="types"))
         return self.sm
 
 if __name__ == '__main__':

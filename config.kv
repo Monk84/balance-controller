@@ -2,11 +2,11 @@ ScreenManager:
     StartScreen:
     BalanceScreen:
     RegularOperationsScreen:
-    RegularOperationTypesScreen:
     StatisticsScreen:
     AddRegularOperationScreen:
     SecretMenuScreen:
     ChangeRegularOperationScreen:
+    RegularOperationTypesScreen:
 
 <StartScreen>:
     name: "main"
@@ -198,11 +198,18 @@ ScreenManager:
                 text: "Сохранить изменения"
                 on_release:
                     root.update_reg_op(reg_op_name.text, reg_op_type.text, reg_op_sum.text, reg_op_period.text, reg_op_notification.text)
-        Button:
-            text: "Вернуться"
-            on_release:
-                app.root.current="main"
-                root.manager.transition.direction = "down"
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Управление типами"
+                on_release:
+                    app.root.current="types"
+                    root.manager.transition.direction = "up"
+            Button:
+                text: "Вернуться"
+                on_release:
+                    app.root.current="main"
+                    root.manager.transition.direction = "down"
 
 
 <AddRegularOperationScreen>:
@@ -276,12 +283,17 @@ ScreenManager:
                 text: "Выберите периодичность уведомлений"
                 values: ["За месяц", "За неделю", "За день", "В тот же день", "Через день"]
         GridLayout:
-            cols: 2
+            cols: 3
             Button:
                 text: "Вернуться"
                 on_release:
                     app.root.current="main"
                     root.manager.transition.direction = "down"
+            Button:
+                text: "Управление типами"
+                on_release:
+                    app.root.current="types"
+                    root.manager.transition.direction = "up"
             Button:
                 text: "Добавить"
                 on_release:
@@ -289,8 +301,47 @@ ScreenManager:
 
 
 <RegularOperationTypesScreen>:
-    name: "reg_op_types"
-
+    name: "types"
+    GridLayout:
+        cols: 1
+        MDLabel:
+            text: "Управление типами регулярных операций"
+            halign: 'center'
+            pos_hint: {'center_y':0.9}
+            font_style: 'H4'
+        GridLayout:
+            cols: 3
+            MDLabel:
+                text: "Добавление типа"
+                halign: 'center'
+                pos_hint: {'center_y':0.9}
+                font_style: 'H4'
+            TextInput:
+                id: type_name
+            Button:
+                text: "Добавить"
+                on_release:
+                    root.add(type_name.text)
+        GridLayout:
+            cols: 3
+            MDLabel:
+                text: "Удаление типа"
+                halign: 'center'
+                pos_hint: {'center_y':0.9}
+                font_style: 'H4'
+            Spinner:
+                id: type_to_delete
+                text: "Выберите тип регулярной операции"
+                values: root.reg_op_types
+            Button:
+                text: "Удалить"
+                on_release:
+                    root.remove(type_to_delete.text)
+        Button:
+            text: "Вернуться"
+            on_release:
+                app.root.current="main"
+                root.manager.transition.direction = "down"
 <StatisticsScreen>:
     name: "stats"
     GridLayout:
