@@ -24,7 +24,6 @@ class StartScreen(Screen):
 
     def on_enter(self):
         Clock.schedule_once(self.initting)
-        #  self.ids["reg_op_name"].text = self.reg_op.name
 
     def initting(self, dt):
         self.get_balance()
@@ -49,9 +48,12 @@ class BalanceScreen(Screen):
         self.get_balance()
 
     def change_balance(self, new_balance):
-        self.balance = int(new_balance)
-        print('changing balance: %d' % self.balance)
-        API.change_deposit_balance(self.balance)
+        try:
+            self.balance = int(new_balance)
+            print('changing balance: %d' % self.balance)
+            API.change_deposit_balance(self.balance)
+        except:
+            pass
 
     def get_balance(self):
         self.balance = API.get_balance()
