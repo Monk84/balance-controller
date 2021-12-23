@@ -165,8 +165,10 @@ class RegularOperationTypesScreen(Screen):
 
 
 class StatisticsScreen(Screen):
-    API.get_operation_types()
-    reg_op_types_statistics = [x.name for x in API.regularOperationTypes]
+    reg_op_types_statistics = []
+    for tp in API.regularOperationTypes:
+        if tp.status:
+            reg_op_types_statistics.append(tp.name)    
     total_income = 0
     total_spend = 0 
     total = 0
@@ -175,7 +177,11 @@ class StatisticsScreen(Screen):
         self.ids["total_income"].text = str(self.total_income)
         self.ids["total_spend"].text = str(self.total_spend)
         self.ids["total"].text = str(self.total)
-        self.reg_op_types_statistics = [x.name for x in API.regularOperationTypes]
+        self.reg_op_types_statistics = []
+        for tp in API.regularOperationTypes:
+            if tp.status:
+                self.reg_op_types_statistics.append(tp.name)
+        self.ids["reg_op_type_stat"].values = self.reg_op_types_statistics
 
     def get_statistics(self, reg_op_type_stat, start_date, end_date):
         final_op_stat = None
@@ -195,7 +201,7 @@ class StatisticsScreen(Screen):
                 self.total_spend = res["total_spend"]
                 self.total = self.total_income - self.total_spend
             except:
-                print("Wrong")
+                print("Wrong data")
 
 class SecretMenuScreen(Screen):
     pass
