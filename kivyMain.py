@@ -234,6 +234,7 @@ class MainApp(MDApp):
         self.sm.add_widget(ChangeRegularOperationScreen(name="reg_op_change"))
         self.sm.add_widget(StatisticsScreen(name="stats"))
         self.sm.add_widget(SecretMenuScreen(name="secret"))
+        self.sm.add_widget(BalanceScreen(name="balance"))
         return self.sm
 
 if __name__ == '__main__':
