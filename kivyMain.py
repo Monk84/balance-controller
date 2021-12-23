@@ -1,21 +1,57 @@
 import datetime
 from datetime import date, timedelta
-# from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition, NoTransition
 from kivymd.theming import ThemeManager
 from kivymd.app import MDApp
 from kivy.clock import Clock
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.properties import StringProperty, ObjectProperty, NumericProperty, AliasProperty
+
 from classes.businessEntity import BusinessEntity
 from classes.const import notification_periods, notification_periods_inverse, periods, periods_inverse
 
 API = BusinessEntity()
 
 class StartScreen(Screen):
-    pass
+    balance = 0
 
+    def on_enter(self):
+        Clock.schedule_once(self.initting)
+        #self.ids["reg_op_name"].text = self.reg_op.name
+
+    def initting(self, dt):
+        self.get_balance()
+
+    def get_balance(self):
+        self.balance = API.get_balance()
+        print('startscreen: balance %d' % self.balance)
+        return str(self.balance)
+
+
+
+
+class BalanceScreen(Screen):
+    balance = NumericProperty(0)
+
+    def on_enter(self):
+        Clock.schedule_once(self.initting)
+
+    def initting(self, dt):
+        self.get_balance()
+
+    def change_balance(self, new_balance):
+        self.balance = int(new_balance)
+        print('changing balance: %d' % self.balance)
+        API.change_deposit_balance(self.balance)
+
+    def get_balance(self):
+        self.balance = API.get_balance()
+        print('balance: get_balance %d' % self.balance)
+        return str(self.balance)
+
+    balstr = AliasProperty(get_balance, None, bind=['balance'])
 
 class RegularOperationsScreen(Screen):
     reg_ops = []
