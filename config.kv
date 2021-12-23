@@ -1,6 +1,7 @@
 ScreenManager:
     StartScreen:
     BalanceScreen:
+    PaymentsScreen:
     RegularOperationsScreen:
     StatisticsScreen:
     AddRegularOperationScreen:
@@ -58,9 +59,13 @@ ScreenManager:
                 pos_hint: {"center_x": 0.5}
         
                 MDFillRoundFlatIconButton:
-                    text: "Управление балансом"
+                    text: "Управление балансом счета"
                     on_release:
                         app.root.current="balance"
+                MDFillRoundFlatIconButton:
+                    text: "Управление балансом платежей"
+                    on_release:
+                        app.root.current="payments"
                 MDFillRoundFlatIconButton:
                     text: "Список операций"
                     halign: 'center'
@@ -86,6 +91,36 @@ ScreenManager:
 
 <BalanceScreen>:
     name: "balance"
+    GridLayout:
+        cols: 1
+        GridLayout:
+            cols: 2
+            Label:
+                text: "Управление балансом"
+                font_size: '30sp'
+            Label:
+                text: "Текущий баланс: %s" % root.balstr
+                font_size: '30sp'
+        GridLayout:
+            cols: 1
+            Label:
+                text: "Введите название"
+            TextInput:
+                id: new_balance
+        GridLayout:
+            cols: 2
+            Button:
+                text: "Сохранить"
+                on_release:
+                    root.change_balance(new_balance.text)
+                    app.root.current="main"
+            Button:
+                text: "Отмена"
+                on_release:
+                    app.root.current="main"
+
+<PaymentsScreen>:
+    name: "payments"
     GridLayout:
         cols: 1
         GridLayout:

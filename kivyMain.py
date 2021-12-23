@@ -24,6 +24,7 @@ class StartScreen(Screen):
 
     def on_enter(self):
         Clock.schedule_once(self.initting)
+        # print(self.ids)
         #  self.ids["reg_op_name"].text = self.reg_op.name
 
     def initting(self, dt):
@@ -31,7 +32,7 @@ class StartScreen(Screen):
 
     def get_balance(self):
         self.balance = API.get_balance()
-        print('startscreen: balance %d' % self.balance)
+        # print('startscreen: balance %d' % self.balance)
         return str(self.balance)
 
     def get_payments(self):
@@ -50,12 +51,34 @@ class BalanceScreen(Screen):
 
     def change_balance(self, new_balance):
         self.balance = int(new_balance)
-        print('changing balance: %d' % self.balance)
+        # print('changing balance: %d' % self.balance)
         API.change_deposit_balance(self.balance)
 
     def get_balance(self):
         self.balance = API.get_balance()
-        print('balance: get_balance %d' % self.balance)
+        # print('balance: get_balance %d' % self.balance)
+        return str(self.balance)
+
+    balstr = AliasProperty(get_balance, None, bind=['balance'])
+
+
+class PaymentsScreen(Screen):
+    balance = NumericProperty(0)
+
+    def on_enter(self):
+        Clock.schedule_once(self.initting)
+
+    def initting(self, dt):
+        self.get_balance()
+
+    def change_balance(self, new_balance):
+        self.balance = int(new_balance)
+        # print('changing balance: %d' % self.balance)
+        API.change_deposit_balance(self.balance)
+
+    def get_balance(self):
+        self.balance = API.get_balance()
+        # print('balance: get_balance %d' % self.balance)
         return str(self.balance)
 
     balstr = AliasProperty(get_balance, None, bind=['balance'])
@@ -277,6 +300,7 @@ class MainApp(MDApp):
         self.kv = Builder.load_file("config.kv")
         self.sm = ScreenManager(transition=SlideTransition())
         self.sm.add_widget(StartScreen(name="main"))
+        self.sm.add_widget(PaymentsScreen(name="payments"))
         self.sm.add_widget(AddRegularOperationScreen(name="add_reg_op"))
         self.sm.add_widget(RegularOperationsScreen(name="reg_ops"))
         self.sm.add_widget(ChangeRegularOperationScreen(name="reg_op_change"))
