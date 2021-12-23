@@ -13,30 +13,43 @@ ScreenManager:
         cols: 1
         GridLayout:
             cols: 1
-            Label:
+            MDLabel:
                 text: "Контроллер баланса"
-        Button:
-            text: "К регулярным операциям"
-            on_release:
-                app.root.current="reg_ops"
-                root.manager.transition.direction = "left"
-        Button:
-            text: "К статистике"
-            on_release:
-                app.root.current="stats"
-                root.manager.transition.direction = "right"
-        Button:
-            text: "Добавить регулярную операцию"
-            on_release:
-                app.root.current="add_reg_op"
-                root.manager.transition.direction = "up"
+                halign: 'center'
+                pos_hint: {'center_y':0.9}
+                font_style: 'H4'
+            
+            MDFillRoundFlatIconButton:
+                text: "К регулярным операциям"
+                halign: 'center'
+                pos_hint: {'center_y':0.4}
+                spacing: 100
+                padding: 50
+                on_release:
+                    app.root.current="reg_ops"
+                    root.manager.transition.direction = "left"
+            MDFillRoundFlatIconButton:
+                text: "К статистике"
+                pos_hint:{'center_y':0.9}
+                on_release:
+                    app.root.current="stats"
+                    root.manager.transition.direction = "right"
+                    
+            MDFillRoundFlatIconButton:
+                text: "Добавить регулярную операцию"
+                on_release:
+                    app.root.current="add_reg_op"
+                    root.manager.transition.direction = "up"
 
 <RegularOperationsScreen>:
     name: "reg_ops"
     GridLayout:
         cols: 1
-        Label:
+        MDLabel:
             text: "Добавление регулярной операции"
+            halign: 'center'
+            pos_hint: {'center_y':0.9}
+            font_style: 'H4'
         GridLayout:
             cols: 1
             GridLayout:
@@ -52,40 +65,68 @@ ScreenManager:
     name: "reg_op_change"
     GridLayout:
         cols: 1
-        Label:
+        MDLabel:
             text: "Редактирование регулярной операции"
+            halign: 'center'
+            pos_hint: {'center_y':0.9}
+            font_style: 'H4'
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Введите название"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: reg_op_name
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Выбор типа регулярной операции"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_type
                 text: "Выберите тип регулярной операции"
                 values: root.reg_op_types
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Сумма регулярной операции"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: reg_op_sum
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Выбор периодичности"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_period
                 text: "Выберите периодичность регулярной операции"
                 values: ["Каждый день", "Каждую неделю", "Каждый месяц", "Каждый год"]
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Настройка уведомления"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_notification
                 text: "Выберите периодичность уведомлений"
@@ -111,40 +152,68 @@ ScreenManager:
     name: "add_reg_op"
     GridLayout:
         cols: 1
-        Label:
+        MDLabel:
             text: "Добавление регулярной операции"
+            halign: 'center'
+            pos_hint: {'center_y':0.9}
+            font_style: 'H4'        
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Введите название"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: reg_op_name
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Выбор типа регулярной операции"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_type
                 text: "Выберите тип регулярной операции"
                 values: root.reg_op_types
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Сумма регулярной операции"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: reg_op_sum
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Выбор периодичности"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_period
                 text: "Выберите периодичность регулярной операции"
                 values: ["Каждый день", "Каждую неделю", "Каждый месяц", "Каждый год"]
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Настройка уведомления"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_notification
                 text: "Выберите периодичность уведомлений"
@@ -169,44 +238,77 @@ ScreenManager:
     name: "stats"
     GridLayout:
         cols: 1
-        Label:
+        MDLabel:
             text: "Статистика"
+            halign: 'center'
+            pos_hint: {'center_y':0.9}
+            font_style: 'H4'
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Введите дату начала периода аналитики"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: start_date
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Введите дату окончания периода аналитики"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: end_date
         GridLayout:
             cols: 2
-            Label:
+            MDLabel:
                 text: "Выбор типа регулярной операции"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             Spinner:
                 id: reg_op_type_stat
                 text: "Выберите тип регулярной операции"
                 values: root.reg_op_types_statistics   
         GridLayout:
             cols: 2
-            Label:
-                text: "Сумма прихода за период"
+            MDLabel:
+                text: "Сумма прихода за период:"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: total_income
         GridLayout:
             cols: 2
-            Label:
-                text: "Сумма платежей за период"
+            MDLabel:
+                text: "Сумма платежей за период:"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: total_spend
         GridLayout:
             cols: 2
-            Label:
-                text: "Итог"
+            MDLabel:
+                text: "Итог:"
+                halign: 'center'
+                pos_hint: {'center_y':0.7}
+                text_color: (0.101, 0.505, 0.576, 0.824)
+                font_style: 'H6'
+                theme_text_color: 'Custom'
             TextInput:
                 id: total
         GridLayout:
@@ -221,6 +323,7 @@ ScreenManager:
                 on_release:
                     app.root.current="main"
                     root.manager.transition.direction = "left"
+                
 
 <SecretMenuScreen>:
     name: "secret"

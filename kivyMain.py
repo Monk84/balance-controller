@@ -1,16 +1,17 @@
 import datetime
 from datetime import date, timedelta
-from kivy.app import App
+# from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.lang import Builder
-from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
-
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition, NoTransition
+from kivymd.theming import ThemeManager
+from kivymd.app import MDApp
+from kivy.clock import Clock
 from classes.businessEntity import BusinessEntity
 from classes.const import notification_periods, notification_periods_inverse, periods, periods_inverse
 
 API = BusinessEntity()
-
 
 class StartScreen(Screen):
     pass
@@ -104,7 +105,7 @@ class StatisticsScreen(Screen):
     total_income = 0
     total_spend = 0 
     total = 0
-    
+ 
     def on_enter(self):
         self.ids["total_income"].text = str(self.total_income)
         self.ids["total_spend"].text = str(self.total_spend)
@@ -124,11 +125,11 @@ class StatisticsScreen(Screen):
         if final_start_date and final_end_date and final_op_stat:
             try:
                 res = API.form_statistics_by_period(reg_op_type_stat, start_date, end_date)
+                self.total_income = res["total_income"]
+                self.total_spend = res["total_spend"]
+                self.total = self.total_income - self.total_spend
             except:
                 print("Wrong")
-            self.total_income = res["total_income"]
-            self.total_spend = res["total_spend"]
-            self.total = self.total_income - self.total_spend
 
 class SecretMenuScreen(Screen):
     pass
@@ -177,14 +178,27 @@ class ScreenManager(ScreenManager):
     pass
 
 
-# Вся конфигурация UI в файле
-kv = Builder.load_file("config.kv")
+class MainApp(MDApp):
 
+    def __init__(self, **kwargs):
+        self.title = "Контролер баланса"
+        self.theme_cls = ThemeManager()
+        self.theme_cls.theme_style = "Light"
+        self.theme_cls.primary_palette = "Indigo"
+        self.theme_cls.primary_hue = "500"
+        super().__init__(**kwargs)
 
-class MainApp(App):
     def build(self):
-        return kv
-
+        # Вся конфигурация UI в файле
+        self.kv = Builder.load_file("config.kv")
+        self.sm = ScreenManager(transition=SlideTransition())
+        self.sm.add_widget(StartScreen(name="main"))
+        self.sm.add_widget(AddRegularOperationScreen(name="add_reg_op"))
+        self.sm.add_widget(RegularOperationsScreen(name="reg_ops"))
+        self.sm.add_widget(ChangeRegularOperationScreen(name="reg_op_change"))
+        self.sm.add_widget(StatisticsScreen(name="stats"))
+        self.sm.add_widget(SecretMenuScreen(name="secret"))
+        return self.sm
 
 if __name__ == '__main__':
     app = MainApp()
